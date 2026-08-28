@@ -466,6 +466,15 @@
       white-space: nowrap;
     }
 
+    .lookup-result .result-meta {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: var(--text-faint);
+      margin-top: 2px;
+    }
+
     .lookup-result .result-symbol {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 0.78rem;
@@ -988,8 +997,7 @@
             <input type="text" id="field-cmc-url" placeholder="Name, ticker, contract address, or a CoinMarketCap link"
               autocomplete="off" spellcheck="false">
             <div class="lookup-results" id="lookup-results" hidden></div>
-            <span class="lookup-status" id="lookup-status" aria-live="polite">Type a name or ticker, paste a contract
-              address, or drop in a CoinMarketCap or CoinGecko link.</span>
+            <span class="lookup-status" id="lookup-status" aria-live="polite">Type a name or ticker, paste a contract address, or drop in a link. New DEX tokens are found too.</span>
           </div>
           <div class="field">
             <label for="field-name">Coin name *</label>
@@ -1159,6 +1167,9 @@
       // Exchanges found by the last lookup, kept on the coin so a later edit
       // still offers them without another round trip.
       var pendingVenues = [];
+      // Set when a coin was resolved through DexScreener rather than
+      // CoinGecko, so Refresh knows which source to price it from.
+      var pendingDexChain = "";
 
       var listRoot = document.getElementById("list-root");
       var rowHead = document.getElementById("row-head");
@@ -1386,6 +1397,7 @@
         editingId = coin ? coin.id : null;
         pendingGeckoId = coin ? (coin.geckoId || "") : "";
         pendingVenues = coin && Array.isArray(coin.buyVenues) ? coin.buyVenues : [];
+        pendingDexChain = coin ? (coin.dexChain || "") : "";
         formTitle.textContent = coin ? "Edit coin" : "Add a coin";
         document.getElementById("field-id").value = coin ? coin.id : "";
         document.getElementById("field-cmc-url").value = coin ? (coin.cmcUrl || "") : "";
@@ -1412,6 +1424,7 @@
         editingId = null;
         pendingGeckoId = "";
         pendingVenues = [];
+        pendingDexChain = "";
         hideLookupResults();
         setFormError("");
         setLookupStatus("");
@@ -1427,7 +1440,7 @@
       function setLookupStatus(message, isError) {
         var status = document.getElementById("lookup-status");
         if (!status) return;
-        status.textContent = message || "Type a name or ticker, paste a contract address, or drop in a CoinMarketCap or CoinGecko link.";
+        status.textContent = message || "Type a name or ticker, paste a contract address, or drop in a link. New DEX tokens are found too.";
         status.className = "lookup-status" + (isError ? " error" : "");
       }
 
@@ -1730,25 +1743,45 @@
         box.hidden = true;
       }
 
-      function renderLookupResults(coins) {
+      // Results are held here so a click can act on the whole entry rather
+      // than re-deriving it from the row's markup.
+      var lookupResults = [];
+
+      function renderLookupResults(results) {
         var box = document.getElementById("lookup-results");
         if (!box) return;
-        if (!coins || !coins.length) { hideLookupResults(); return; }
-        box.innerHTML = coins.map(function (coin) {
-          return '<button type="button" class="lookup-result" data-coin-id="' + escapeHtml(coin.id) + '">' +
-            '<span class="result-name">' + escapeHtml(coin.name) + '</span>' +
-            '<span class="result-symbol">' + escapeHtml(String(coin.symbol || "").toUpperCase()) + '</span>' +
-            '<span class="result-rank">' + (coin.market_cap_rank ? "#" + coin.market_cap_rank : "—") + '</span>' +
+        lookupResults = results || [];
+        if (!lookupResults.length) { hideLookupResults(); return; }
+        box.innerHTML = lookupResults.map(function (result, index) {
+          var trailing = result.source === "dexscreener"
+            ? formatLiquidity(liquidityOf(result.pair)) + " liq"
+            : (result.meta || "—");
+          return '<button type="button" class="lookup-result" data-index="' + index + '">' +
+            '<span class="result-name">' + escapeHtml(result.name) +
+            (result.source === "dexscreener" && result.meta
+              ? '<span class="result-meta">' + escapeHtml(result.meta) + '</span>' : '') +
+            '</span>' +
+            '<span class="result-symbol">' + escapeHtml(String(result.symbol || "").toUpperCase()) + '</span>' +
+            '<span class="result-rank">' + escapeHtml(trailing) + '</span>' +
             '</button>';
         }).join("");
         box.hidden = false;
       }
 
-      function pickSearchResult(id) {
+      function pickSearchResult(index) {
+        var result = lookupResults[Number(index)];
+        if (!result) return;
         var requestId = ++lookupRequest;
         hideLookupResults();
+
+        // A DexScreener pool already carries everything the form needs.
+        if (result.source === "dexscreener") {
+          applyDexPair(result.pair);
+          return;
+        }
+
         setLookupStatus("Fetching details…");
-        fetchCoinDetail(id).then(function (detail) {
+        fetchCoinDetail(result.id).then(function (detail) {
           if (requestId !== lookupRequest) return;
           applyCoinDetail(detail, detail.id);
         }).catch(function () {
@@ -1773,16 +1806,151 @@
           });
           var list = (narrowed.length ? narrowed : coins).slice();
           list.sort(function (a, b) { return rankOf(a) - rankOf(b); });
-          list = list.slice(0, 8);
-          renderLookupResults(list);
-          setLookupStatus(list.length
-            ? "Pick the coin you mean."
-            : "Nothing on CoinGecko matches “" + query + "”.", !list.length);
+          list = list.slice(0, 8).map(function (coin) {
+            return { source: "coingecko", id: coin.id, name: coin.name, symbol: coin.symbol,
+              meta: coin.market_cap_rank ? "#" + coin.market_cap_rank : "" };
+          });
+          if (list.length) {
+            renderLookupResults(list);
+            setLookupStatus("Pick the coin you mean.");
+            return;
+          }
+          // Nothing on CoinGecko — newly launched tokens live in the DEX pools.
+          return searchDexAndShow(query, requestId);
         }).catch(function () {
           if (requestId !== lookupRequest) return;
           hideLookupResults();
           setLookupStatus("Couldn't reach CoinGecko — check your connection, or wait a moment if you've " +
             "looked up several coins in a row.", true);
+        });
+      }
+
+      // --- DexScreener fallback ---------------------------------------------
+      // CoinGecko only lists coins it has reviewed, so brand-new DEX tokens
+      // (pump.fun launches and the like) are absent entirely — no amount of
+      // better matching finds them. DexScreener indexes the pools themselves,
+      // so it covers those, and is the fallback whenever CoinGecko draws a
+      // blank. It has no market-cap rank, so results are ranked by liquidity.
+
+      var DEX_NAMES = {
+        pumpswap: "PumpSwap", raydium: "Raydium", meteora: "Meteora", orca: "Orca",
+        jupiter: "Jupiter", uniswap: "Uniswap", pancakeswap: "PancakeSwap",
+        sushiswap: "SushiSwap", aerodrome: "Aerodrome", curve: "Curve", camelot: "Camelot",
+        traderjoe: "Trader Joe", quickswap: "QuickSwap", balancer: "Balancer"
+      };
+
+      function dexVenueName(dexId) {
+        var key = String(dexId || "").toLowerCase();
+        if (DEX_NAMES[key]) return DEX_NAMES[key];
+        return key ? key.charAt(0).toUpperCase() + key.slice(1) : "";
+      }
+
+      function liquidityOf(pair) {
+        return (pair && pair.liquidity && pair.liquidity.usd) || 0;
+      }
+
+      // The same token trades in several pools; the deepest one is the most
+      // trustworthy price and the venue actually worth naming.
+      function bestPair(pairs) {
+        var best = null;
+        (pairs || []).forEach(function (pair) {
+          if (!best || liquidityOf(pair) > liquidityOf(best)) best = pair;
+        });
+        return best;
+      }
+
+      function dexFetch(path) {
+        return fetch("https://api.dexscreener.com/latest/dex/" + path).then(function (res) {
+          // A 404 here means "no pools for that", not "service unreachable";
+          // reporting it as an outage would send you chasing your connection.
+          if (res.status === 404) return { pairs: [] };
+          if (!res.ok) throw new Error("dexscreener failed");
+          return res.json();
+        });
+      }
+
+      // Collapses many pools down to one entry per token, best pool first.
+      function dexTokensFrom(payload) {
+        var pairs = (payload && payload.pairs) || [];
+        var byToken = {};
+        pairs.forEach(function (pair) {
+          var base = pair.baseToken || {};
+          if (!base.address) return;
+          var current = byToken[base.address];
+          if (!current || liquidityOf(pair) > liquidityOf(current)) byToken[base.address] = pair;
+        });
+        return Object.keys(byToken).map(function (address) { return byToken[address]; })
+          .sort(function (a, b) { return liquidityOf(b) - liquidityOf(a); });
+      }
+
+      function dexResultsFrom(payload, limit) {
+        return dexTokensFrom(payload).slice(0, limit || 8).map(function (pair) {
+          var base = pair.baseToken || {};
+          return {
+            source: "dexscreener",
+            id: base.address,
+            name: base.name || base.symbol || "Unknown token",
+            symbol: base.symbol || "",
+            meta: [pair.chainId, dexVenueName(pair.dexId)].filter(Boolean).join(" · "),
+            pair: pair
+          };
+        });
+      }
+
+      function formatLiquidity(value) {
+        var n = Number(value) || 0;
+        if (n >= 1e9) return "$" + (n / 1e9).toFixed(1) + "B";
+        if (n >= 1e6) return "$" + (n / 1e6).toFixed(1) + "M";
+        if (n >= 1e3) return "$" + Math.round(n / 1e3) + "K";
+        return "$" + Math.round(n);
+      }
+
+      // Fills the form from a DexScreener pool. No second request: everything
+      // needed is already in the pair.
+      function applyDexPair(pair) {
+        var base = pair.baseToken || {};
+        pendingGeckoId = "";
+        pendingDexChain = pair.chainId || "";
+        document.getElementById("field-name").value = base.name || base.symbol || "";
+        document.getElementById("field-symbol").value = String(base.symbol || "").toUpperCase();
+        if (base.address) document.getElementById("field-contract").value = base.address;
+        if (pair.url) document.getElementById("field-cmc-url").value = pair.url;
+
+        var filled = [];
+        if (pair.priceUsd != null) {
+          document.getElementById("field-price").value = String(pair.priceUsd);
+          filled.push("price");
+        }
+        if (base.address) filled.push("contract");
+
+        var venues = [];
+        dexTokensFrom({ pairs: [pair] });
+        var venue = dexVenueName(pair.dexId);
+        if (venue) { venues = [venue]; filled.push("where it trades"); }
+        pendingVenues = venues;
+        setBuyOptions(venues, selectedBuyWhere() || venues[0] || "");
+
+        setLookupStatus("Filled " + filled.join(", ") + " for " + (base.name || base.symbol) +
+          " from DexScreener (" + [pair.chainId, venue].filter(Boolean).join(" · ") +
+          "). Not on CoinGecko, so Refresh will use DexScreener too.");
+      }
+
+      function searchDexAndShow(query, requestId) {
+        setLookupStatus("Nothing on CoinGecko — checking DexScreener…");
+        return dexFetch("search?q=" + encodeURIComponent(query)).then(function (payload) {
+          if (requestId !== lookupRequest) return;
+          var results = dexResultsFrom(payload, 8);
+          if (!results.length) {
+            setLookupStatus("Nothing on CoinGecko or DexScreener matches “" + query +
+              "”. If you have the contract address, paste that instead.", true);
+            return;
+          }
+          renderLookupResults(results);
+          setLookupStatus("Not on CoinGecko. These are the DEX pools trading that name — " +
+            "check the chain and liquidity, since copycats are common.");
+        }).catch(function () {
+          if (requestId !== lookupRequest) return;
+          setLookupStatus("Couldn't reach DexScreener — try again in a moment.", true);
         });
       }
 
@@ -1838,16 +2006,27 @@
         setLookupStatus("Looking up that contract…");
         lookupByContract(address, requestId).then(function (detail) {
           if (requestId !== lookupRequest) return;
-          if (!detail) {
-            setLookupStatus("No coin on CoinGecko uses that contract address.", true);
+          if (detail) {
+            applyCoinDetail(detail, "");
+            document.getElementById("field-contract").value = address;
             return;
           }
-          document.getElementById("field-contract").value = address;
-          applyCoinDetail(detail, "");
-          document.getElementById("field-contract").value = address;
+          // Not on CoinGecko — try the DEX pools, which carry newer tokens.
+          setLookupStatus("Not on CoinGecko — checking DexScreener…");
+          return dexFetch("tokens/" + encodeURIComponent(address)).then(function (payload) {
+            if (requestId !== lookupRequest) return;
+            var pair = bestPair((payload && payload.pairs) || []);
+            if (!pair) {
+              setLookupStatus("That contract isn't on CoinGecko or DexScreener. Check the address, " +
+                "or fill the coin in by hand.", true);
+              return;
+            }
+            applyDexPair(pair);
+            document.getElementById("field-contract").value = address;
+          });
         }).catch(function () {
           if (requestId !== lookupRequest) return;
-          setLookupStatus("Couldn't reach CoinGecko — try again in a moment.", true);
+          setLookupStatus("Couldn't reach CoinGecko or DexScreener — try again in a moment.", true);
         });
       }
 
@@ -1893,7 +2072,7 @@
         var fields = {
           name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price,
           targetX: Number(targetX), entryPrice: entryPrice, entryDate: entryDate,
-          buyWhere: buyWhere, buyVenues: pendingVenues, notes: notes,
+          buyWhere: buyWhere, buyVenues: pendingVenues, dexChain: pendingDexChain, notes: notes,
           // Typing a price by hand is as good a reading as a fetched one, so
           // the freshness stamp moves either way.
           priceAt: Date.now()
@@ -2034,35 +2213,71 @@
           });
         });
 
+        var updated = 0;
+
         chain.then(function () {
           var ids = [];
           targets.forEach(function (c) {
             if (c.geckoId && ids.indexOf(c.geckoId) === -1) ids.push(c.geckoId);
           });
-          if (!ids.length) throw new Error("no ids resolved");
-          return fetch("https://api.coingecko.com/api/v3/simple/price?ids=" + encodeURIComponent(ids.join(",")) + "&vs_currencies=usd");
-        }).then(function (r) {
-          if (!r.ok) throw new Error("price fetch failed");
-          return r.json();
+          if (!ids.length) return null;
+          return fetch("https://api.coingecko.com/api/v3/simple/price?ids=" +
+            encodeURIComponent(ids.join(",")) + "&vs_currencies=usd")
+            .then(function (r) {
+              if (!r.ok) throw new Error("price fetch failed");
+              return r.json();
+            })
+            .catch(function () { return null; });
         }).then(function (data) {
-          var updated = 0;
           var now = Date.now();
-          targets.forEach(function (coin) {
-            var quote = coin.geckoId ? data[coin.geckoId] : null;
-            if (quote && quote.usd != null) {
-              coin.price = String(quote.usd);
-              coin.priceAt = now;
-              updated++;
-            }
+          if (data) {
+            targets.forEach(function (coin) {
+              var quote = coin.geckoId ? data[coin.geckoId] : null;
+              if (quote && quote.usd != null) {
+                coin.price = String(quote.usd);
+                coin.priceAt = now;
+                updated++;
+              }
+            });
+          }
+
+          // Anything CoinGecko couldn't price but that has a contract is
+          // priced from the DEX pools instead, in one batched request.
+          var pending = targets.filter(function (c) {
+            return c.priceAt !== now && c.contract;
           });
+          if (!pending.length) return null;
+          var addresses = pending.map(function (c) { return c.contract; }).slice(0, 30);
+          return dexFetch("tokens/" + encodeURIComponent(addresses.join(",")))
+            .then(function (payload) {
+              var byAddress = {};
+              ((payload && payload.pairs) || []).forEach(function (pair) {
+                var base = pair.baseToken || {};
+                if (!base.address) return;
+                var key = base.address.toLowerCase();
+                if (!byAddress[key] || liquidityOf(pair) > liquidityOf(byAddress[key])) byAddress[key] = pair;
+              });
+              pending.forEach(function (coin) {
+                var pair = byAddress[String(coin.contract).toLowerCase()];
+                if (pair && pair.priceUsd != null) {
+                  coin.price = String(pair.priceUsd);
+                  coin.priceAt = now;
+                  coin.dexChain = pair.chainId || coin.dexChain || "";
+                  updated++;
+                }
+              });
+            })
+            .catch(function () { return null; });
+        }).then(function () {
           setRefreshing(false);
           render();
           persist();
           if (updated === 0) {
-            showToast("Couldn't match any of these coins on CoinGecko");
+            showToast("Couldn't find current prices for any of these coins");
           } else {
             var missed = targets.length - updated;
-            showToast("Updated " + updated + " price" + (updated === 1 ? "" : "s") + (missed ? " · " + missed + " not found" : ""));
+            showToast("Updated " + updated + " price" + (updated === 1 ? "" : "s") +
+              (missed ? " · " + missed + " not found" : ""));
           }
         }).catch(function () {
           setRefreshing(false);
@@ -2355,7 +2570,7 @@
           '<form id="coin-form" novalidate>' +
           '<input type="hidden" id="field-id">' +
           '<div class="form-grid">' +
-          '<div class="field span-2"><label for="field-cmc-url">Find the coin</label><input type="text" id="field-cmc-url" placeholder="Name, ticker, contract address, or a CoinMarketCap link" autocomplete="off" spellcheck="false"><div class="lookup-results" id="lookup-results" hidden></div><span class="lookup-status" id="lookup-status" aria-live="polite">Type a name or ticker, paste a contract address, or drop in a CoinMarketCap or CoinGecko link.</span></div>' +
+          '<div class="field span-2"><label for="field-cmc-url">Find the coin</label><input type="text" id="field-cmc-url" placeholder="Name, ticker, contract address, or a CoinMarketCap link" autocomplete="off" spellcheck="false"><div class="lookup-results" id="lookup-results" hidden></div><span class="lookup-status" id="lookup-status" aria-live="polite">Type a name or ticker, paste a contract address, or drop in a link. New DEX tokens are found too.</span></div>' +
           '<div class="field"><label for="field-name">Coin name *</label><input type="text" id="field-name" placeholder="e.g. Fetch.ai" required></div>' +
           '<div class="field"><label for="field-symbol">Symbol / ticker *</label><input type="text" id="field-symbol" placeholder="e.g. FET" required></div>' +
           '<div class="field span-2"><label for="field-contract">Contract address</label><input type="text" id="field-contract" class="mono" placeholder="0x… (leave blank for native coins like BTC or ETH)"></div>' +
@@ -2458,8 +2673,8 @@
         lookupTimer = setTimeout(function () { runLookup(value); }, 450);
       });
       document.getElementById("lookup-results").addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-coin-id]");
-        if (btn) pickSearchResult(btn.getAttribute("data-coin-id"));
+        var btn = e.target.closest("[data-index]");
+        if (btn) pickSearchResult(btn.getAttribute("data-index"));
       });
       document.getElementById("search-input").addEventListener("input", function (e) { filterText = e.target.value; render(); });
       document.getElementById("sort-select").addEventListener("change", function (e) { sortKey = e.target.value; render(); });
