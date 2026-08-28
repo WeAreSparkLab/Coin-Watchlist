@@ -4,7 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Coin Watchlist</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Installable app. These point at sibling files that only exist where the
+       page is hosted; opened as a lone file they 404 harmlessly and the app
+       still works. -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#eeede4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#15161a" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Watchlist">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -101,6 +113,26 @@
 
     .topbar .titles {
       min-width: 0;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      flex: none;
+    }
+
+    .install-chip {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--on-accent);
+      font-weight: 600;
+    }
+
+    .install-chip:hover {
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+      color: var(--on-accent);
     }
 
     .sync-chip {
@@ -946,9 +978,12 @@
         <p class="tagline">Every coin you're weighing up — contract, target, and how far it's moved since the day you
           bought.</p>
       </div>
-      <button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings">
-        <span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span>
-      </button>
+      <div class="topbar-actions">
+        <button type="button" class="sync-chip install-chip" id="install-btn" hidden>Install app</button>
+        <button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings">
+          <span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span>
+        </button>
+      </div>
     </header>
 
     <div class="disclaimer">
@@ -2582,7 +2617,10 @@
           '<h1>Coin Watchlist</h1>' +
           '<p class="tagline">Every coin you\'re weighing up — contract, target, and how far it\'s moved since the day you bought.</p>' +
           '</div>' +
+          '<div class="topbar-actions">' +
+          '<button type="button" class="sync-chip install-chip" id="install-btn" hidden>Install app</button>' +
           '<button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings"><span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span></button>' +
+          '</div>' +
           '</header>' +
           '<div class="disclaimer">' +
           '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1L15 14H1L8 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6V9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="11.7" r="0.8" fill="currentColor"/></svg>' +
@@ -2657,7 +2695,16 @@
         var body = renderBodyShell(currentState);
         return (
           '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n' +
-          '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\n' +
+          '<link rel="manifest" href="manifest.webmanifest">\n' +
+          '<meta name="theme-color" content="#eeede4" media="(prefers-color-scheme: light)">\n' +
+          '<meta name="theme-color" content="#15161a" media="(prefers-color-scheme: dark)">\n' +
+          '<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">\n' +
+          '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n' +
+          '<meta name="apple-mobile-web-app-capable" content="yes">\n' +
+          '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n' +
+          '<meta name="apple-mobile-web-app-title" content="Watchlist">\n' +
+          '<meta name="mobile-web-app-capable" content="yes">\n' +
           '<title>Coin Watchlist</title>\n' +
           '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
           '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
@@ -2748,6 +2795,55 @@
           if (coin) openForm(coin);
         }
       });
+
+      // --- installable app ---------------------------------------------------
+      // Only meaningful when the page is served over http(s): opened as a file
+      // there is no origin to scope a worker to, so this quietly does nothing.
+      (function registerServiceWorker() {
+        if (!("serviceWorker" in navigator)) return;
+        if (location.protocol !== "https:" && location.hostname !== "localhost") return;
+        window.addEventListener("load", function () {
+          try {
+            navigator.serviceWorker.register("sw.js").catch(function () { });
+          } catch (e) { }
+        });
+      })();
+
+      // Chrome hands over the install prompt rather than showing its own, so
+      // the button only appears when installing is actually possible.
+      var deferredInstall = null;
+      var installBtn = document.getElementById("install-btn");
+
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        deferredInstall = e;
+        if (installBtn) installBtn.hidden = false;
+      });
+
+      window.addEventListener("appinstalled", function () {
+        deferredInstall = null;
+        if (installBtn) installBtn.hidden = true;
+        showToast("Installed — open it from your home screen");
+      });
+
+      if (installBtn) {
+        installBtn.addEventListener("click", function () {
+          if (!deferredInstall) return;
+          var prompt = deferredInstall;
+          deferredInstall = null;
+          installBtn.hidden = true;
+          prompt.prompt();
+          // Offer again if they dismiss it; the chance is otherwise gone.
+          if (prompt.userChoice && typeof prompt.userChoice.then === "function") {
+            prompt.userChoice.then(function (choice) {
+              if (choice && choice.outcome !== "accepted") {
+                deferredInstall = prompt;
+                installBtn.hidden = false;
+              }
+            });
+          }
+        });
+      }
 
       render();
 
