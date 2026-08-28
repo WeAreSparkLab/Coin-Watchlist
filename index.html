@@ -86,13 +86,65 @@
     }
 
     .app {
-      max-width: 980px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 40px 24px 80px;
     }
 
     .topbar {
       margin-bottom: 18px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar .titles {
+      min-width: 0;
+    }
+
+    .sync-chip {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+
+    .sync-chip:hover {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .sync-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-faint);
+      flex: none;
+    }
+
+    .sync-chip.is-on .sync-dot {
+      background: var(--positive);
+    }
+
+    .sync-chip.is-busy .sync-dot {
+      background: var(--accent);
+    }
+
+    .sync-chip.is-error .sync-dot,
+    .sync-chip.is-conflict .sync-dot {
+      background: var(--negative);
     }
 
     .eyebrow {
@@ -142,7 +194,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin: 22px 0;
     }
@@ -167,6 +219,14 @@
       font-size: 1.35rem;
       font-weight: 500;
       font-variant-numeric: tabular-nums;
+    }
+
+    .stat .stat-value.up {
+      color: var(--positive);
+    }
+
+    .stat .stat-value.down {
+      color: var(--negative);
     }
 
     .controls {
@@ -222,6 +282,24 @@
       flex: 0 0 auto;
       width: auto;
       max-width: 180px;
+    }
+
+    /* The sort control above wants to hug its text; selects inside a form
+       field are full-width like every other input. */
+    .field select {
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: none;
+    }
+
+    .field input.other-input {
+      margin-top: 8px;
+    }
+
+    .form-error {
+      margin: 14px 0 0;
+      font-size: 0.82rem;
+      color: var(--negative);
     }
 
     .btn {
@@ -342,6 +420,67 @@
       color: var(--text-muted);
     }
 
+    .lookup-results {
+      display: flex;
+      flex-direction: column;
+      margin-top: 6px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+      max-height: 264px;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .lookup-result {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text);
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    .lookup-result:last-child {
+      border-bottom: none;
+    }
+
+    .lookup-result:hover,
+    .lookup-result:focus-visible {
+      background: var(--surface-alt);
+    }
+
+    .lookup-result .result-name {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lookup-result .result-symbol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .lookup-result .result-rank {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      font-variant-numeric: tabular-nums;
+      min-width: 3.5em;
+      text-align: right;
+    }
+
     .lookup-status.error {
       color: var(--negative);
     }
@@ -357,6 +496,61 @@
       margin-top: 18px;
     }
 
+    .key-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .key-row input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .key-row .btn {
+      flex: none;
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    .sql-details {
+      margin-top: 16px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .sql-details summary {
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .sql-details summary:hover {
+      color: var(--text);
+    }
+
+    .sql-block {
+      margin: 12px 0 0;
+      max-height: 260px;
+      overflow: auto;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.73rem;
+      line-height: 1.55;
+      white-space: pre;
+      color: var(--text-muted);
+    }
+
+    .sync-note {
+      margin: 14px 0 0;
+      font-size: 0.78rem;
+      color: var(--text-faint);
+    }
+
     .list-root {
       display: flex;
       flex-direction: column;
@@ -365,7 +559,7 @@
 
     .row-head {
       display: grid;
-      grid-template-columns: 2fr 1.3fr 0.9fr 0.8fr 1fr 64px;
+      grid-template-columns: 1.7fr 1.1fr 0.85fr 1.05fr 0.65fr 0.9fr 64px;
       gap: 12px;
       padding: 0 16px;
       font-size: 0.72rem;
@@ -376,7 +570,7 @@
 
     .row {
       display: grid;
-      grid-template-columns: 2fr 1.3fr 0.9fr 0.8fr 1fr 64px;
+      grid-template-columns: 1.7fr 1.1fr 0.85fr 1.05fr 0.65fr 0.9fr 64px;
       gap: 12px;
       align-items: center;
       background: var(--surface);
@@ -431,6 +625,83 @@
       font-family: 'IBM Plex Mono', monospace;
       font-variant-numeric: tabular-nums;
       font-size: 0.92rem;
+    }
+
+    .cell-price .price-age {
+      display: block;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      margin-top: 2px;
+    }
+
+    .pnl {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3px;
+    }
+
+    .pnl-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .pnl-pill.up {
+      background: color-mix(in srgb, var(--positive) 15%, transparent);
+      color: var(--positive);
+    }
+
+    .pnl-pill.down {
+      background: color-mix(in srgb, var(--negative) 15%, transparent);
+      color: var(--negative);
+    }
+
+    .pnl-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-faint);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .mark-btn {
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px dashed var(--border-strong);
+      border-radius: 999px;
+      padding: 3px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .mark-btn:hover {
+      color: var(--text);
+      background: var(--surface-alt);
+      border-color: var(--accent);
+    }
+
+    .refresh-meta {
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+
+    .btn[disabled] {
+      opacity: 0.55;
+      cursor: default;
     }
 
     .target-pill {
@@ -572,6 +843,12 @@
     }
 
     @media (max-width: 720px) {
+      .topbar {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
       .row-head {
         display: none;
       }
@@ -615,10 +892,15 @@
 <body>
   <div class="app" id="app-root">
     <header class="topbar">
-      <p class="eyebrow">Personal research</p>
-      <h1>Coin Watchlist</h1>
-      <p class="tagline">Every coin you're weighing up — contract, entry price, and how big a swing you think it has.
-      </p>
+      <div class="titles">
+        <p class="eyebrow">Personal research</p>
+        <h1>Coin Watchlist</h1>
+        <p class="tagline">Every coin you're weighing up — contract, target, and how far it's moved since the day you
+          bought.</p>
+      </div>
+      <button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings">
+        <span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span>
+      </button>
     </header>
 
     <div class="disclaimer">
@@ -627,9 +909,9 @@
         <path d="M8 6V9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
         <circle cx="8" cy="11.7" r="0.8" fill="currentColor" />
       </svg>
-      <span>Coin details can be filled from a CoinMarketCap link; prices are a snapshot, not live tracking. Not
-        financial
-        advice; double-check any contract address yourself before you buy.</span>
+      <span>Prices only change when you hit Refresh — nothing here tracks live, and gains are worked out from the
+        entry price you saved. Not financial advice; double-check any contract address yourself before you
+        buy.</span>
     </div>
 
     <div class="stats" id="stats-root"></div>
@@ -646,25 +928,68 @@
       <select id="sort-select" aria-label="Sort coins">
         <option value="target-desc">Highest target ×</option>
         <option value="target-asc">Lowest target ×</option>
+        <option value="pnl-desc">Best since buy</option>
+        <option value="pnl-asc">Worst since buy</option>
         <option value="name-asc">Name A–Z</option>
         <option value="recent">Recently added</option>
       </select>
+      <button class="btn" id="refresh-btn" type="button">Refresh prices</button>
+      <span class="refresh-meta" id="refresh-meta" aria-live="polite"></span>
       <button class="btn btn-primary" id="add-btn" type="button">+ Add coin</button>
     </div>
 
+    <section class="form-panel" id="cloud-panel" hidden>
+      <h2>Cloud backup</h2>
+      <p class="form-sub">Keeps a copy of your watchlist in your own Supabase project, so clearing this browser
+        doesn't lose it. Your keys stay in this browser only — they're never written into the page.</p>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="field-supabase-url">Supabase project URL</label>
+          <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co">
+          <span class="hint">Project settings → Data API → Project URL</span>
+        </div>
+        <div class="field span-2">
+          <label for="field-supabase-key">Anon public key</label>
+          <input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…">
+          <span class="hint">The publishable anon key — safe to use here, it grants nothing on its own</span>
+        </div>
+        <div class="field span-2">
+          <label for="field-sync-key">Sync key</label>
+          <div class="key-row">
+            <input type="text" id="field-sync-key" class="mono" placeholder="Generated for you" spellcheck="false">
+            <button type="button" class="btn" id="copy-key-btn">Copy</button>
+            <button type="button" class="btn" id="new-key-btn">New</button>
+          </div>
+          <span class="hint">This is the secret that unlocks your row. Save it somewhere — enter the same key on
+            another device to load the same watchlist.</span>
+        </div>
+      </div>
+      <details class="sql-details">
+        <summary>First time? Run this SQL in your Supabase SQL editor</summary>
+        <pre class="sql-block" id="setup-sql"></pre>
+        <button type="button" class="btn" id="copy-sql-btn">Copy SQL</button>
+      </details>
+      <p class="sync-note" id="cloud-status">Not connected.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="cloud-disconnect-btn">Disconnect</button>
+        <button type="button" class="btn btn-ghost" id="cloud-close-btn">Close</button>
+        <button type="button" class="btn btn-primary" id="cloud-save-btn">Connect &amp; sync</button>
+      </div>
+    </section>
+
     <section class="form-panel" id="form-panel" hidden>
       <h2 id="form-title">Add a coin</h2>
-      <p class="form-sub">Paste a CoinMarketCap link to fill in the coin details, then add your price, target, and
-        exchange.</p>
+      <p class="form-sub">Search by name or ticker, paste a contract address, or drop in a link — it fills the rest.</p>
       <form id="coin-form" novalidate>
         <input type="hidden" id="field-id">
         <div class="form-grid">
           <div class="field span-2">
-            <label for="field-cmc-url">CoinMarketCap link</label>
-            <input type="url" id="field-cmc-url" placeholder="https://coinmarketcap.com/currencies/bitcoin/"
-              autocomplete="url">
-            <span class="lookup-status" id="lookup-status" aria-live="polite">We'll fill the name, ticker, price, and
-              contract when available.</span>
+            <label for="field-cmc-url">Find the coin</label>
+            <input type="text" id="field-cmc-url" placeholder="Name, ticker, contract address, or a CoinMarketCap link"
+              autocomplete="off" spellcheck="false">
+            <div class="lookup-results" id="lookup-results" hidden></div>
+            <span class="lookup-status" id="lookup-status" aria-live="polite">Type a name or ticker, paste a contract
+              address, or drop in a CoinMarketCap or CoinGecko link.</span>
           </div>
           <div class="field">
             <label for="field-name">Coin name *</label>
@@ -680,18 +1005,30 @@
               placeholder="0x… (leave blank for native coins like BTC or ETH)">
           </div>
           <div class="field">
-            <label for="field-price">Price *</label>
+            <label for="field-price">Price now *</label>
             <input type="text" id="field-price" placeholder="e.g. 0.42" required>
-            <span class="hint">Whatever you're seeing right now — you keep this current</span>
+            <span class="hint">Refresh prices updates this for you</span>
           </div>
           <div class="field">
             <label for="field-target">Target, in × *</label>
             <input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required>
             <span class="hint">How many times over you think this could go</span>
           </div>
+          <div class="field">
+            <label for="field-entry-price">Bought at</label>
+            <input type="text" id="field-entry-price" placeholder="e.g. 0.30">
+            <span class="hint">The price you paid — leave blank if you don't hold it yet</span>
+          </div>
+          <div class="field">
+            <label for="field-entry-date">Date bought</label>
+            <input type="date" id="field-entry-date">
+            <span class="hint">Optional, just for your own records</span>
+          </div>
           <div class="field span-2">
-            <label for="field-buy">Where to buy *</label>
-            <input type="text" id="field-buy" placeholder="e.g. Uniswap, Coinbase, Binance" required>
+            <label for="field-buy-select">Where to buy *</label>
+            <select id="field-buy-select"></select>
+            <input type="text" id="field-buy" class="other-input" placeholder="Name the exchange or DEX" hidden>
+            <span class="hint">Paste a link above and this fills with the exchanges actually trading it</span>
           </div>
           <div class="field span-2">
             <label for="field-notes">Notes</label>
@@ -699,6 +1036,7 @@
               placeholder="Why you're watching it, red flags, anything worth remembering"></textarea>
           </div>
         </div>
+        <p class="form-error" id="form-error" hidden></p>
         <div class="form-actions">
           <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
           <button type="submit" class="btn btn-primary" id="save-btn">Save coin</button>
@@ -707,7 +1045,8 @@
     </section>
 
     <div class="row-head" id="row-head" hidden>
-      <span>Coin</span><span>Contract</span><span>Price</span><span>Target</span><span>Where to buy</span><span></span>
+      <span>Coin</span><span>Contract</span><span>Price</span><span>Since buy</span><span>Target</span><span>Where to
+        buy</span><span></span>
     </div>
 
     <section class="list-root" id="list-root"></section>
@@ -727,6 +1066,67 @@
       var ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.3 2.3a1.5 1.5 0 0 1 2.1 2.1L5 12.8l-2.9.6.6-2.9 8.6-8.2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
       var ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5 4.6 13a1 1 0 0 0 1 .95h4.8a1 1 0 0 0 1-.95l.6-8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       var ICON_EMPTY = '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1.4"/><path d="M24 17v14M19.5 20.5c0-2 2-3 4.5-3s4.5 1 4.5 2.7c0 3.6-9 1.8-9 5.4 0 1.7 2 2.9 4.5 2.9s4.5-1.1 4.5-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+
+      // Kept here rather than in the markup so it exists once: the page
+      // rebuilds its own body from a string when it saves, and anything in
+      // that body has to be maintained in two places. The panel fills the
+      // <pre> from this at open time.
+      var SETUP_SQL = [
+        "-- Coin Watchlist cloud backup — run once in the Supabase SQL editor.",
+        "",
+        "create table if not exists public.watchlists (",
+        "  id         uuid primary key,",
+        "  data       jsonb not null default '[]'::jsonb,",
+        "  updated_at timestamptz not null default now()",
+        ");",
+        "",
+        "-- The anon key gets no direct access at all: row level security on",
+        "-- with zero policies refuses every plain select, insert and update.",
+        "alter table public.watchlists enable row level security;",
+        "revoke all on public.watchlists from anon, authenticated;",
+        "",
+        "-- The only way in is these two functions, and both demand the sync key.",
+        "create or replace function public.watchlist_load(key uuid)",
+        "returns jsonb language sql security definer set search_path = public as $$",
+        "  select coalesce(",
+        "    (select jsonb_build_object('data', w.data, 'updated_at', w.updated_at)",
+        "       from public.watchlists w where w.id = key),",
+        "    jsonb_build_object('data', '[]'::jsonb, 'updated_at', null)",
+        "  );",
+        "$$;",
+        "",
+        "create or replace function public.watchlist_save(",
+        "  key uuid, payload jsonb, expected timestamptz default null)",
+        "returns jsonb language plpgsql security definer set search_path = public as $$",
+        "declare",
+        "  current_ts timestamptz;",
+        "  new_ts     timestamptz;",
+        "begin",
+        "  select updated_at into current_ts",
+        "    from public.watchlists where id = key for update;",
+        "",
+        "  -- Another device saved since this one last synced: refuse, and hand",
+        "  -- its copy back so the page can ask which version to keep.",
+        "  if current_ts is not null and (expected is null or current_ts > expected) then",
+        "    return jsonb_build_object('ok', false, 'updated_at', current_ts,",
+        "      'data', (select data from public.watchlists where id = key));",
+        "  end if;",
+        "",
+        "  insert into public.watchlists (id, data, updated_at)",
+        "       values (key, payload, now())",
+        "  on conflict (id) do update",
+        "          set data = excluded.data, updated_at = now()",
+        "    returning updated_at into new_ts;",
+        "",
+        "  return jsonb_build_object('ok', true, 'updated_at', new_ts);",
+        "end;",
+        "$$;",
+        "",
+        "revoke all on function public.watchlist_load(uuid) from public;",
+        "revoke all on function public.watchlist_save(uuid, jsonb, timestamptz) from public;",
+        "grant execute on function public.watchlist_load(uuid) to anon;",
+        "grant execute on function public.watchlist_save(uuid, jsonb, timestamptz) to anon;"
+      ].join("\n");
 
       // Standalone build: this file has no shared save destination (no
       // window.claude host), so the browser's localStorage is the persistence
@@ -751,6 +1151,14 @@
       var sortKey = "target-desc";
       var editingId = null;
       var pendingUndo = null;
+      var refreshing = false;
+      // Set when the add/edit form's CoinMarketCap lookup succeeds, so the
+      // saved coin already knows its CoinGecko id and the first Refresh
+      // doesn't have to search for it.
+      var pendingGeckoId = "";
+      // Exchanges found by the last lookup, kept on the coin so a later edit
+      // still offers them without another round trip.
+      var pendingVenues = [];
 
       var listRoot = document.getElementById("list-root");
       var rowHead = document.getElementById("row-head");
@@ -758,6 +1166,7 @@
       var formPanel = document.getElementById("form-panel");
       var formTitle = document.getElementById("form-title");
       var coinForm = document.getElementById("coin-form");
+      var cloudPanel = document.getElementById("cloud-panel");
       var lookupTimer = null;
       var lookupRequest = 0;
 
@@ -781,6 +1190,67 @@
         return addr.slice(0, 6) + "…" + addr.slice(-4);
       }
 
+      // Prices are stored as whatever string the viewer typed ("$0.42",
+      // "1,205", "0.000031"), so anything arithmetic has to strip the
+      // currency dressing first. Returns NaN for prices that aren't numbers
+      // at all, which every caller treats as "can't compute".
+      function parseNumeric(raw) {
+        var v = String(raw == null ? "" : raw).trim().replace(/[$,\s]/g, "");
+        if (v === "") return NaN;
+        var n = Number(v);
+        return isFinite(n) ? n : NaN;
+      }
+
+      // null (not 0) when there's no usable entry price — "not bought yet"
+      // and "flat since buying" are different states and render differently.
+      function pnlPercent(coin) {
+        var entry = parseNumeric(coin.entryPrice);
+        var now = parseNumeric(coin.price);
+        if (!isFinite(entry) || !isFinite(now) || entry <= 0) return null;
+        return ((now - entry) / entry) * 100;
+      }
+
+      function formatPercent(pct) {
+        var abs = Math.abs(pct);
+        var decimals = abs >= 100 ? 0 : (abs >= 10 ? 1 : 2);
+        return (pct < 0 ? "−" : "+") + abs.toFixed(decimals) + "%";
+      }
+
+      function todayISO() {
+        var d = new Date();
+        var m = String(d.getMonth() + 1);
+        var day = String(d.getDate());
+        return d.getFullYear() + "-" + (m.length < 2 ? "0" + m : m) + "-" + (day.length < 2 ? "0" + day : day);
+      }
+
+      // Date inputs hand back "YYYY-MM-DD"; parsing that with new Date()
+      // directly would read it as UTC and can slip a day backwards in
+      // western timezones, so the parts are fed in as local numbers.
+      function formatDate(iso) {
+        if (!iso) return "";
+        var parts = String(iso).split("-");
+        if (parts.length !== 3) return String(iso);
+        var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        if (isNaN(d.getTime())) return String(iso);
+        return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "2-digit" });
+      }
+
+      function relativeTime(ts) {
+        if (!ts) return "";
+        var diff = Date.now() - ts;
+        if (diff < 0) return "just now";
+        var mins = Math.round(diff / 60000);
+        if (mins < 1) return "just now";
+        if (mins < 60) return mins + "m ago";
+        var hrs = Math.round(mins / 60);
+        if (hrs < 24) return hrs + "h ago";
+        return Math.round(hrs / 24) + "d ago";
+      }
+
+      function lastRefreshedAt(list) {
+        return list.reduce(function (acc, c) { return Math.max(acc, Number(c.priceAt) || 0); }, 0);
+      }
+
       function uid() {
         return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
       }
@@ -790,15 +1260,22 @@
         var targets = list.map(function (c) { return Number(c.targetX) || 0; });
         var highest = targets.length ? Math.max.apply(null, targets) : 0;
         var avg = targets.length ? (targets.reduce(function (a, b) { return a + b; }, 0) / targets.length) : 0;
-        return { count: count, highest: highest, avg: avg };
+        var moves = list.map(pnlPercent).filter(function (p) { return p !== null; });
+        // A plain average across positions, not weighted by how much was put
+        // into each — the watchlist never asks for position sizes.
+        var avgPnl = moves.length ? (moves.reduce(function (a, b) { return a + b; }, 0) / moves.length) : null;
+        return { count: count, highest: highest, avg: avg, held: moves.length, avgPnl: avgPnl };
       }
 
       function renderStatsHTML(list) {
         var s = computeStats(list);
+        var pnlClass = s.avgPnl === null ? "" : (s.avgPnl > 0 ? " up" : (s.avgPnl < 0 ? " down" : ""));
+        var pnlText = s.avgPnl === null ? "—" : formatPercent(s.avgPnl);
         return (
           '<div class="stat"><p class="stat-label">Coins tracked</p><p class="stat-value">' + s.count + '</p></div>' +
-          '<div class="stat"><p class="stat-label">Highest target</p><p class="stat-value">' + (s.count ? s.highest + "×" : "—") + '</p></div>' +
-          '<div class="stat"><p class="stat-label">Average target</p><p class="stat-value">' + (s.count ? s.avg.toFixed(1) + "×" : "—") + '</p></div>'
+          '<div class="stat"><p class="stat-label">Holding</p><p class="stat-value">' + (s.count ? s.held : "—") + '</p></div>' +
+          '<div class="stat"><p class="stat-label">Avg since buy</p><p class="stat-value' + pnlClass + '">' + pnlText + '</p></div>' +
+          '<div class="stat"><p class="stat-label">Highest target</p><p class="stat-value">' + (s.count ? s.highest + "×" : "—") + '</p></div>'
         );
       }
 
@@ -813,6 +1290,19 @@
         list = list.slice();
         if (sortKey === "target-desc") list.sort(function (a, b) { return (Number(b.targetX) || 0) - (Number(a.targetX) || 0); });
         else if (sortKey === "target-asc") list.sort(function (a, b) { return (Number(a.targetX) || 0) - (Number(b.targetX) || 0); });
+        // Coins with no entry price have no standing to be "best" or "worst",
+        // so they collect at the bottom of both directions rather than
+        // counting as 0%.
+        else if (sortKey === "pnl-desc" || sortKey === "pnl-asc") {
+          var dir = sortKey === "pnl-desc" ? -1 : 1;
+          list.sort(function (a, b) {
+            var pa = pnlPercent(a), pb = pnlPercent(b);
+            if (pa === null && pb === null) return 0;
+            if (pa === null) return 1;
+            if (pb === null) return -1;
+            return (pa - pb) * dir;
+          });
+        }
         else if (sortKey === "name-asc") list.sort(function (a, b) { return (a.name || "").localeCompare(b.name || ""); });
         else if (sortKey === "recent") list.sort(function (a, b) { return (b.addedAt || 0) - (a.addedAt || 0); });
         return list;
@@ -826,11 +1316,24 @@
           : '<span class="contract-chip empty">native / none</span>';
         var notesHtml = coin.notes ? '<div class="row-notes">' + escapeHtml(coin.notes) + '</div>' : "";
 
+        var age = coin.priceAt ? '<span class="price-age">' + escapeHtml(relativeTime(coin.priceAt)) + '</span>' : "";
+
+        var pct = pnlPercent(coin);
+        var pnlHtml;
+        if (pct === null) {
+          pnlHtml = '<button type="button" class="mark-btn" data-action="mark-bought" data-id="' + coin.id + '" title="Save today\'s price as your entry">+ Mark bought</button>';
+        } else {
+          var dirClass = pct > 0 ? " up" : (pct < 0 ? " down" : "");
+          var sub = "from " + formatPrice(coin.entryPrice) + (coin.entryDate ? " · " + formatDate(coin.entryDate) : "");
+          pnlHtml = '<div class="pnl"><span class="pnl-pill' + dirClass + '">' + escapeHtml(formatPercent(pct)) + '</span><span class="pnl-sub" title="' + escapeHtml(sub) + '">' + escapeHtml(sub) + '</span></div>';
+        }
+
         return (
           '<article class="row" data-id="' + coin.id + '">' +
           '<div class="cell-coin" data-label="Coin"><div class="coin-name">' + escapeHtml(coin.name) + '</div><div class="coin-symbol">' + escapeHtml(coin.symbol) + '</div></div>' +
           '<div data-label="Contract">' + contractHtml + '</div>' +
-          '<div class="cell-price" data-label="Price">' + escapeHtml(formatPrice(coin.price)) + '</div>' +
+          '<div class="cell-price" data-label="Price">' + escapeHtml(formatPrice(coin.price)) + age + '</div>' +
+          '<div data-label="Since buy">' + pnlHtml + '</div>' +
           '<div data-label="Target"><span class="target-pill' + tierClass + '">' + target + '×</span></div>' +
           '<div data-label="Where to buy"><span class="buy-chip" title="' + escapeHtml(coin.buyWhere || "") + '">' + escapeHtml(coin.buyWhere || "—") + '</span></div>' +
           '<div class="cell-actions">' +
@@ -858,8 +1361,17 @@
         return list.map(renderRow).join("");
       }
 
+      function renderRefreshMeta() {
+        var meta = document.getElementById("refresh-meta");
+        if (!meta) return;
+        if (refreshing) { meta.textContent = "Fetching prices…"; return; }
+        var ts = lastRefreshedAt(state);
+        meta.textContent = ts ? "Updated " + relativeTime(ts) : "";
+      }
+
       function render() {
         statsRoot.innerHTML = renderStatsHTML(state);
+        renderRefreshMeta();
         var list = getVisibleList();
         var isCollectionEmpty = state.length === 0;
         rowHead.hidden = isCollectionEmpty || list.length === 0;
@@ -872,6 +1384,8 @@
 
       function openForm(coin) {
         editingId = coin ? coin.id : null;
+        pendingGeckoId = coin ? (coin.geckoId || "") : "";
+        pendingVenues = coin && Array.isArray(coin.buyVenues) ? coin.buyVenues : [];
         formTitle.textContent = coin ? "Edit coin" : "Add a coin";
         document.getElementById("field-id").value = coin ? coin.id : "";
         document.getElementById("field-cmc-url").value = coin ? (coin.cmcUrl || "") : "";
@@ -880,8 +1394,13 @@
         document.getElementById("field-contract").value = coin ? coin.contract : "";
         document.getElementById("field-price").value = coin ? coin.price : "";
         document.getElementById("field-target").value = coin ? coin.targetX : "";
-        document.getElementById("field-buy").value = coin ? coin.buyWhere : "";
+        document.getElementById("field-entry-price").value = coin ? (coin.entryPrice || "") : "";
+        document.getElementById("field-entry-date").value = coin ? (coin.entryDate || "") : "";
+        setBuyOptions(coin && coin.buyVenues, coin ? coin.buyWhere : "");
         document.getElementById("field-notes").value = coin ? coin.notes : "";
+        hideLookupResults();
+        setFormError("");
+        cloudPanel.hidden = true;
         formPanel.hidden = false;
         formPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
         document.getElementById("field-name").focus();
@@ -891,79 +1410,457 @@
         formPanel.hidden = true;
         coinForm.reset();
         editingId = null;
+        pendingGeckoId = "";
+        pendingVenues = [];
+        hideLookupResults();
+        setFormError("");
         setLookupStatus("");
+      }
+
+      function setFormError(message) {
+        var el = document.getElementById("form-error");
+        if (!el) return;
+        el.textContent = message || "";
+        el.hidden = !message;
       }
 
       function setLookupStatus(message, isError) {
         var status = document.getElementById("lookup-status");
         if (!status) return;
-        status.textContent = message || "We'll fill the name, ticker, price, and contract when available.";
+        status.textContent = message || "Type a name or ticker, paste a contract address, or drop in a CoinMarketCap or CoinGecko link.";
         status.className = "lookup-status" + (isError ? " error" : "");
       }
 
-      function getCoinMarketCapSlug(rawUrl) {
+      // Accepts a CoinMarketCap currency link or a CoinGecko coin link. A
+      // CoinGecko slug is that site's own coin id, so it resolves exactly;
+      // a CoinMarketCap slug is a different vocabulary and has to be matched.
+      function getCoinSlug(rawUrl) {
         try {
-          var parsed = new URL(rawUrl.trim());
-          if (parsed.hostname.toLowerCase() !== "coinmarketcap.com" && parsed.hostname.toLowerCase() !== "www.coinmarketcap.com") return "";
+          var parsed = new URL(String(rawUrl).trim());
+          var host = parsed.hostname.toLowerCase().replace(/^www\./, "");
           var parts = parsed.pathname.split("/").filter(Boolean);
-          if (parts.length < 2 || parts[0].toLowerCase() !== "currencies") return "";
-          return parts[1].toLowerCase();
+          if (host === "coinmarketcap.com") {
+            if (parts.length < 2 || parts[0].toLowerCase() !== "currencies") return "";
+            return parts[1].toLowerCase();
+          }
+          if (host === "coingecko.com") {
+            var idx = parts.indexOf("coins");
+            if (idx > -1 && parts[idx + 1]) return parts[idx + 1].toLowerCase();
+            return "";
+          }
+          return "";
         } catch (e) {
           return "";
         }
       }
 
+      // CoinMarketCap slugs often carry a chain or qualifier suffix that
+      // CoinGecko's search does not match: "popcat-sol" returns nothing
+      // while "popcat" returns the coin. Trailing markers get stripped.
+      var SLUG_SUFFIXES = ["sol", "solana", "eth", "ethereum", "erc20", "bep20", "spl", "bsc", "bnb", "base",
+        "arb", "arbitrum", "op", "optimism", "poly", "polygon", "matic", "avax", "avalanche", "ton", "sui",
+        "apt", "aptos", "tron", "trx", "near", "sei", "blast", "token", "coin", "network", "protocol", "finance"];
+
+      var CHAIN_HINTS = {
+        sol: "solana", solana: "solana", spl: "solana",
+        eth: "ethereum", ethereum: "ethereum", erc20: "ethereum",
+        bsc: "binance-smart-chain", bnb: "binance-smart-chain", bep20: "binance-smart-chain",
+        base: "base", arb: "arbitrum-one", arbitrum: "arbitrum-one",
+        op: "optimistic-ethereum", optimism: "optimistic-ethereum",
+        poly: "polygon-pos", polygon: "polygon-pos", matic: "polygon-pos",
+        avax: "avalanche", avalanche: "avalanche", ton: "the-open-network",
+        sui: "sui", apt: "aptos", aptos: "aptos", tron: "tron", trx: "tron", near: "near", sei: "sei-network"
+      };
+
+      function trimSlug(slug) {
+        var parts = String(slug).split("-").filter(Boolean);
+        while (parts.length > 1 && SLUG_SUFFIXES.indexOf(parts[parts.length - 1]) > -1) parts.pop();
+        return parts.join("-");
+      }
+
       function titleFromSlug(slug) {
-        return slug.split("-").map(function (part) {
+        return trimSlug(slug).split("-").map(function (part) {
           return part ? part.charAt(0).toUpperCase() + part.slice(1) : part;
         }).join(" ");
       }
 
-      function fillFromCoinGecko(slug, requestId) {
-        var endpoint = "https://api.coingecko.com/api/v3/search?query=" + encodeURIComponent(slug);
-        return fetch(endpoint).then(function (response) {
-          if (!response.ok) throw new Error("lookup failed");
-          return response.json();
-        }).then(function (result) {
-          var coins = result.coins || [];
-          var match = coins.find(function (coin) { return (coin.id || "").toLowerCase() === slug; }) || coins[0];
-          if (!match) throw new Error("coin not found");
-          if (requestId !== lookupRequest) return;
-          document.getElementById("field-name").value = match.name || titleFromSlug(slug);
-          document.getElementById("field-symbol").value = (match.symbol || "").toUpperCase();
-          setLookupStatus("Coin details found. Check them before saving.");
-          return fetch("https://api.coingecko.com/api/v3/coins/" + encodeURIComponent(match.id) + "?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false");
-        }).then(function (response) {
-          if (!response || requestId !== lookupRequest) return;
-          if (!response.ok) return;
-          return response.json();
-        }).then(function (coin) {
-          if (!coin || requestId !== lookupRequest) return;
-          var price = coin.market_data && coin.market_data.current_price && coin.market_data.current_price.usd;
-          if (price != null) document.getElementById("field-price").value = String(price);
-          var platforms = coin.platforms || {};
-          var contract = Object.keys(platforms).map(function (network) { return platforms[network]; }).find(function (address) { return address; });
-          if (contract) document.getElementById("field-contract").value = contract;
+      // CoinGecko's search matches single words only — a hyphenated or
+      // spaced query ("shiba-inu", "fetch ai") returns an empty list however
+      // real the coin is. So only single tokens are worth sending, longest
+      // first because that is usually the distinctive part of the name.
+      function slugCandidates(slug) {
+        var tokens = trimSlug(slug).split("-").filter(Boolean);
+        var out = [];
+        tokens.slice().sort(function (a, b) { return b.length - a.length; }).forEach(function (token) {
+          if (out.indexOf(token) === -1) out.push(token);
+        });
+        return out.slice(0, 3);
+      }
+
+      function normalizeKey(value) {
+        return String(value == null ? "" : value).toLowerCase().replace(/[^a-z0-9]/g, "");
+      }
+
+      function rankOf(coin) {
+        var r = coin && coin.market_cap_rank;
+        return typeof r === "number" && isFinite(r) ? r : Infinity;
+      }
+
+      // Scores a candidate against the WHOLE slug, never against the loose
+      // word that happened to find it — otherwise the "not" in a slug like
+      // "not-a-real-coin" matches the symbol NOT and a wrong coin gets saved
+      // with full confidence. A single-word match only counts when that word
+      // is most of the slug, which is what separates "jupiter-ag" (really
+      // Jupiter) from "wrapped-bitcoin" (not Bitcoin).
+      var MIN_ACCEPT_SCORE = 55;
+
+      function scoreCandidate(coin, slug, query) {
+        var id = normalizeKey(coin.id);
+        var name = normalizeKey(coin.name);
+        var symbol = normalizeKey(coin.symbol);
+        var nSlug = normalizeKey(slug);
+        var nTrim = normalizeKey(trimSlug(slug));
+        var nQuery = normalizeKey(query);
+
+        if (id === nSlug) return 100;
+        if (id === nTrim) return 95;
+        if (name === nSlug || name === nTrim) return 90;
+        if (symbol === nSlug || symbol === nTrim) return 85;
+
+        var covers = nTrim.length ? nQuery.length / nTrim.length : 0;
+        if (nQuery && covers >= 0.6) {
+          if (name === nQuery) return 70;
+          if (id === nQuery) return 68;
+          if (symbol === nQuery) return 65;
+        }
+
+        if (nTrim.length >= 4 && id.indexOf(nTrim) === 0) return 60;
+        if (nTrim.length >= 4 && name.indexOf(nTrim) === 0) return 55;
+        return 0;
+      }
+
+      function searchCoinGecko(query) {
+        return fetch("https://api.coingecko.com/api/v3/search?query=" + encodeURIComponent(query))
+          .then(function (res) {
+            if (!res.ok) throw new Error("search failed");
+            return res.json();
+          })
+          .then(function (result) { return result.coins || []; });
+      }
+
+      // Tries each candidate in turn and keeps the best match seen, stopping
+      // early once a confident one turns up so the common case is one request.
+      function resolveCoin(slug, requestId) {
+        var queries = slugCandidates(slug);
+        var best = null;
+        var chain = Promise.resolve();
+        queries.forEach(function (query) {
+          chain = chain.then(function () {
+            // requestId is omitted by callers outside the form (the refresh
+            // path), which have no newer-keystroke race to guard against.
+            if (requestId !== undefined && requestId !== lookupRequest) return;
+            // Stop as soon as a match is confident: CoinGecko's free tier
+            // rate-limits, so every avoided request matters.
+            if (best && best.score >= 85) return;
+            return searchCoinGecko(query).then(function (coins) {
+              coins.forEach(function (coin) {
+                var score = scoreCandidate(coin, slug, query);
+                if (!best || score > best.score ||
+                  (score === best.score && rankOf(coin) < rankOf(best.coin))) {
+                  best = { coin: coin, score: score };
+                }
+              });
+            }).catch(function () { });
+          });
+        });
+        // A weak match is worse than none: it silently saves the wrong coin.
+        return chain.then(function () {
+          return best && best.score >= MIN_ACCEPT_SCORE ? best.coin : null;
         });
       }
 
-      function lookupCoinMarketCap(rawUrl) {
-        var slug = getCoinMarketCapSlug(rawUrl);
-        var requestId = ++lookupRequest;
-        if (!rawUrl.trim()) {
-          setLookupStatus("");
-          return;
-        }
-        if (!slug) {
-          setLookupStatus("Paste a valid CoinMarketCap currency link.", true);
-          return;
-        }
-        setLookupStatus("Looking up " + titleFromSlug(slug) + "...");
-        fillFromCoinGecko(slug, requestId).catch(function () {
-          if (requestId !== lookupRequest) return;
-          document.getElementById("field-name").value = titleFromSlug(slug);
-          setLookupStatus("Could not fetch details. The name was filled from the link; check the remaining fields manually.", true);
+      function pickContract(platforms, slug) {
+        var available = {};
+        Object.keys(platforms || {}).forEach(function (network) {
+          if (platforms[network]) available[network] = platforms[network];
         });
+        var networks = Object.keys(available);
+        if (!networks.length) return "";
+
+        // A "-sol" style suffix in the link names the chain the viewer was
+        // looking at, so that address wins over any other listing.
+        var parts = String(slug).split("-");
+        for (var i = parts.length - 1; i >= 0; i--) {
+          var hinted = CHAIN_HINTS[parts[i]];
+          if (hinted && available[hinted]) return available[hinted];
+        }
+        var preferred = ["ethereum", "solana", "binance-smart-chain", "base"];
+        for (var j = 0; j < preferred.length; j++) {
+          if (available[preferred[j]]) return available[preferred[j]];
+        }
+        return available[networks[0]];
+      }
+
+      // Ordered by volume, but venues we recognise float to the top: raw
+      // volume order is dominated by exchanges most people have never heard
+      // of. Not a judgement of the rest — they stay in the list.
+      var KNOWN_VENUES = ["Binance", "Coinbase Exchange", "Coinbase", "Kraken", "Bybit", "OKX", "Upbit",
+        "KuCoin", "Bitget", "Gate", "Gate.io", "MEXC", "Crypto.com Exchange", "HTX", "Bitfinex", "Bitstamp",
+        "Hyperliquid", "Uniswap", "Uniswap V2", "Uniswap V3", "PancakeSwap", "PancakeSwap V3", "Raydium",
+        "Jupiter", "Orca", "Meteora", "Aerodrome", "Curve", "SushiSwap", "Balancer", "Camelot"];
+
+      function exchangesFrom(detail) {
+        var tickers = (detail && detail.tickers) || [];
+        var volumeOf = function (t) { return (t.converted_volume && t.converted_volume.usd) || 0; };
+        var seen = {};
+        var known = [];
+        var others = [];
+        tickers.slice().sort(function (a, b) { return volumeOf(b) - volumeOf(a); }).forEach(function (t) {
+          var name = t.market && t.market.name;
+          if (!name || seen[name]) return;
+          seen[name] = true;
+          (KNOWN_VENUES.indexOf(name) > -1 ? known : others).push(name);
+        });
+        return known.concat(others).slice(0, 14);
+      }
+
+      var COMMON_VENUES = ["Binance", "Coinbase", "Kraken", "Bybit", "OKX", "KuCoin", "Bitget", "MEXC",
+        "Gate.io", "Crypto.com", "Hyperliquid", "Uniswap", "PancakeSwap", "Raydium", "Jupiter", "Orca",
+        "Aerodrome", "Curve", "SushiSwap", "1inch"];
+
+      function buyOption(value, selected) {
+        return '<option value="' + escapeHtml(value) + '"' + (selected ? ' selected' : '') + '>' + escapeHtml(value) + '</option>';
+      }
+
+      function setBuyOptions(discovered, currentValue) {
+        var select = document.getElementById("field-buy-select");
+        var other = document.getElementById("field-buy");
+        if (!select) return;
+        var list = (discovered || []).filter(Boolean);
+        var current = currentValue || "";
+        var isCustom = !!current && list.indexOf(current) === -1 && COMMON_VENUES.indexOf(current) === -1;
+
+        var html = '<option value="">Choose where you\'d buy…</option>';
+        if (list.length) {
+          html += '<optgroup label="Trading now">' +
+            list.map(function (v) { return buyOption(v, v === current); }).join("") + '</optgroup>';
+        }
+        var rest = COMMON_VENUES.filter(function (v) { return list.indexOf(v) === -1; });
+        html += '<optgroup label="Common venues">' +
+          rest.map(function (v) { return buyOption(v, v === current); }).join("") + '</optgroup>';
+        if (isCustom) {
+          html += '<optgroup label="Saved">' + buyOption(current, true) + '</optgroup>';
+        }
+        html += '<option value="__other__">Other…</option>';
+
+        select.innerHTML = html;
+        select.value = current && !isCustom ? current : (isCustom ? current : "");
+        if (other) { other.hidden = true; other.value = ""; }
+      }
+
+      function syncBuyOther() {
+        var select = document.getElementById("field-buy-select");
+        var other = document.getElementById("field-buy");
+        if (!select || !other) return;
+        var wantsOther = select.value === "__other__";
+        other.hidden = !wantsOther;
+        if (wantsOther) other.focus();
+      }
+
+      function selectedBuyWhere() {
+        var select = document.getElementById("field-buy-select");
+        var other = document.getElementById("field-buy");
+        if (!select) return "";
+        if (select.value === "__other__") return other ? other.value.trim() : "";
+        return select.value;
+      }
+
+      function fetchCoinDetail(id) {
+        return fetch("https://api.coingecko.com/api/v3/coins/" + encodeURIComponent(id) +
+          "?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false")
+          .then(function (response) {
+            if (!response.ok) throw new Error("detail failed");
+            return response.json();
+          });
+      }
+
+      // One fill path for all three ways in — a link, a typed search, or a
+      // pasted contract — so they can't drift apart.
+      function applyCoinDetail(detail, slugHint) {
+        pendingGeckoId = detail.id || "";
+        document.getElementById("field-name").value = detail.name || "";
+        document.getElementById("field-symbol").value = (detail.symbol || "").toUpperCase();
+        // Rewrite the box to the exact CoinGecko coin, so this saves an
+        // unambiguous reference and later refreshes skip the guessing.
+        if (detail.id) {
+          document.getElementById("field-cmc-url").value = "https://www.coingecko.com/en/coins/" + detail.id;
+        }
+
+        var filled = [];
+        var price = detail.market_data && detail.market_data.current_price && detail.market_data.current_price.usd;
+        if (price != null) {
+          document.getElementById("field-price").value = String(price);
+          filled.push("price");
+        }
+
+        var contract = pickContract(detail.platforms, slugHint || detail.id || "");
+        if (contract) {
+          document.getElementById("field-contract").value = contract;
+          filled.push("contract");
+        }
+
+        var venues = exchangesFrom(detail);
+        pendingVenues = venues;
+        if (venues.length) {
+          // Only pre-pick a venue when none is chosen, so re-running a
+          // lookup never overrides a choice already made.
+          setBuyOptions(venues, selectedBuyWhere() || venues[0]);
+          filled.push(venues.length + " place" + (venues.length === 1 ? "" : "s") + " to buy");
+        }
+
+        setLookupStatus(filled.length
+          ? "Filled " + filled.join(", ") + " for " + detail.name + ". Check before saving."
+          : "Found " + detail.name + ", but no price or listings came back.");
+      }
+
+      function hideLookupResults() {
+        var box = document.getElementById("lookup-results");
+        if (!box) return;
+        box.innerHTML = "";
+        box.hidden = true;
+      }
+
+      function renderLookupResults(coins) {
+        var box = document.getElementById("lookup-results");
+        if (!box) return;
+        if (!coins || !coins.length) { hideLookupResults(); return; }
+        box.innerHTML = coins.map(function (coin) {
+          return '<button type="button" class="lookup-result" data-coin-id="' + escapeHtml(coin.id) + '">' +
+            '<span class="result-name">' + escapeHtml(coin.name) + '</span>' +
+            '<span class="result-symbol">' + escapeHtml(String(coin.symbol || "").toUpperCase()) + '</span>' +
+            '<span class="result-rank">' + (coin.market_cap_rank ? "#" + coin.market_cap_rank : "—") + '</span>' +
+            '</button>';
+        }).join("");
+        box.hidden = false;
+      }
+
+      function pickSearchResult(id) {
+        var requestId = ++lookupRequest;
+        hideLookupResults();
+        setLookupStatus("Fetching details…");
+        fetchCoinDetail(id).then(function (detail) {
+          if (requestId !== lookupRequest) return;
+          applyCoinDetail(detail, detail.id);
+        }).catch(function () {
+          if (requestId !== lookupRequest) return;
+          setLookupStatus("Couldn't fetch that coin's details — try again in a moment.", true);
+        });
+      }
+
+      // CoinGecko's search only matches single words, so a typed "shiba inu"
+      // is sent as its longest word and the results are narrowed here.
+      function searchAndShow(query, requestId) {
+        setLookupStatus("Searching…");
+        var tokens = query.split(/\s+/).filter(Boolean);
+        var sent = tokens.slice().sort(function (a, b) { return b.length - a.length; })[0] || query;
+        return searchCoinGecko(sent).then(function (coins) {
+          if (requestId !== lookupRequest) return;
+          var nq = normalizeKey(query);
+          var narrowed = coins.filter(function (coin) {
+            return normalizeKey(coin.name).indexOf(nq) > -1 ||
+              normalizeKey(coin.id).indexOf(nq) > -1 ||
+              normalizeKey(coin.symbol) === nq;
+          });
+          var list = (narrowed.length ? narrowed : coins).slice();
+          list.sort(function (a, b) { return rankOf(a) - rankOf(b); });
+          list = list.slice(0, 8);
+          renderLookupResults(list);
+          setLookupStatus(list.length
+            ? "Pick the coin you mean."
+            : "Nothing on CoinGecko matches “" + query + "”.", !list.length);
+        }).catch(function () {
+          if (requestId !== lookupRequest) return;
+          hideLookupResults();
+          setLookupStatus("Couldn't reach CoinGecko — check your connection, or wait a moment if you've " +
+            "looked up several coins in a row.", true);
+        });
+      }
+
+      // A contract address identifies a coin exactly, which is the surest
+      // route for anything too new or too obscure to search well.
+      var CONTRACT_PLATFORMS = ["ethereum", "binance-smart-chain", "base", "arbitrum-one", "polygon-pos"];
+
+      function lookupByContract(address, requestId) {
+        var platforms = looksLikeSolanaAddress(address) ? ["solana"] : CONTRACT_PLATFORMS;
+        var chain = Promise.resolve(null);
+        platforms.forEach(function (platform) {
+          chain = chain.then(function (found) {
+            if (found || requestId !== lookupRequest) return found;
+            return fetch("https://api.coingecko.com/api/v3/coins/" + platform + "/contract/" +
+              encodeURIComponent(address))
+              .then(function (r) { return r.ok ? r.json() : null; })
+              .then(function (json) { return json && json.id ? json : null; })
+              .catch(function () { return null; });
+          });
+        });
+        return chain;
+      }
+
+      function looksLikeUrl(value) { return /^https?:\/\//i.test(value); }
+      function looksLikeEvmAddress(value) { return /^0x[a-fA-F0-9]{40}$/.test(value); }
+      function looksLikeSolanaAddress(value) { return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value); }
+
+      function lookupFromLink(rawUrl, requestId) {
+        var slug = getCoinSlug(rawUrl);
+        if (!slug) {
+          setLookupStatus("That link isn't a CoinMarketCap or CoinGecko coin page.", true);
+          return;
+        }
+        setLookupStatus("Looking up " + titleFromSlug(slug) + "…");
+        resolveCoin(slug, requestId).then(function (match) {
+          if (requestId !== lookupRequest) return;
+          if (!match) throw new Error("not found");
+          return fetchCoinDetail(match.id).then(function (detail) {
+            if (requestId !== lookupRequest) return;
+            applyCoinDetail(detail, slug);
+          });
+        }).catch(function () {
+          if (requestId !== lookupRequest) return;
+          if (!document.getElementById("field-name").value.trim()) {
+            document.getElementById("field-name").value = titleFromSlug(slug);
+          }
+          setLookupStatus("Couldn't match that link on CoinGecko. Try typing the coin's name or ticker " +
+            "instead, or paste its contract address.", true);
+        });
+      }
+
+      function lookupFromContract(address, requestId) {
+        setLookupStatus("Looking up that contract…");
+        lookupByContract(address, requestId).then(function (detail) {
+          if (requestId !== lookupRequest) return;
+          if (!detail) {
+            setLookupStatus("No coin on CoinGecko uses that contract address.", true);
+            return;
+          }
+          document.getElementById("field-contract").value = address;
+          applyCoinDetail(detail, "");
+          document.getElementById("field-contract").value = address;
+        }).catch(function () {
+          if (requestId !== lookupRequest) return;
+          setLookupStatus("Couldn't reach CoinGecko — try again in a moment.", true);
+        });
+      }
+
+      // Routes whatever was typed to the right lookup.
+      function runLookup(rawValue) {
+        var requestId = ++lookupRequest;
+        var value = String(rawValue == null ? "" : rawValue).trim();
+        hideLookupResults();
+        if (!value) { setLookupStatus(""); return; }
+        if (looksLikeUrl(value)) return lookupFromLink(value, requestId);
+        if (looksLikeEvmAddress(value) || looksLikeSolanaAddress(value)) return lookupFromContract(value, requestId);
+        if (value.length < 2) { setLookupStatus(""); return; }
+        return searchAndShow(value, requestId);
       }
 
       function handleSubmit(ev) {
@@ -974,39 +1871,74 @@
         var contract = document.getElementById("field-contract").value.trim();
         var price = document.getElementById("field-price").value.trim();
         var targetX = document.getElementById("field-target").value;
-        var buyWhere = document.getElementById("field-buy").value.trim();
+        var entryPrice = document.getElementById("field-entry-price").value.trim();
+        var entryDate = document.getElementById("field-entry-date").value;
+        var buyWhere = selectedBuyWhere();
         var notes = document.getElementById("field-notes").value.trim();
 
-        if (!name || !symbol || !price || !targetX || !buyWhere) return;
+        // The form is novalidate, so a missing field used to make Save do
+        // nothing at all. Say which one instead.
+        var missing = [];
+        if (!name) missing.push("coin name");
+        if (!symbol) missing.push("symbol");
+        if (!price) missing.push("price");
+        if (!targetX) missing.push("target");
+        if (!buyWhere) missing.push("where to buy");
+        if (missing.length) {
+          setFormError("Still needs " + missing.join(", ") + ".");
+          return;
+        }
+        setFormError("");
+
+        var fields = {
+          name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price,
+          targetX: Number(targetX), entryPrice: entryPrice, entryDate: entryDate,
+          buyWhere: buyWhere, buyVenues: pendingVenues, notes: notes,
+          // Typing a price by hand is as good a reading as a fetched one, so
+          // the freshness stamp moves either way.
+          priceAt: Date.now()
+        };
 
         if (editingId) {
           var idx = state.findIndex(function (c) { return c.id === editingId; });
           if (idx > -1) {
-            state[idx] = Object.assign({}, state[idx], { name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price, targetX: Number(targetX), buyWhere: buyWhere, notes: notes });
+            // A changed CoinMarketCap link may point at a different coin, so
+            // the cached CoinGecko id has to be dropped and re-resolved.
+            var keepGeckoId = state[idx].cmcUrl === cmcUrl ? state[idx].geckoId : "";
+            state[idx] = Object.assign({}, state[idx], fields, { geckoId: keepGeckoId });
           }
         } else {
-          state.push({ id: uid(), name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price, targetX: Number(targetX), buyWhere: buyWhere, notes: notes, addedAt: Date.now() });
+          state.push(Object.assign({ id: uid(), addedAt: Date.now(), geckoId: pendingGeckoId }, fields));
         }
+        pendingGeckoId = "";
         closeForm();
         render();
         persist();
       }
 
-      function showToast(message, undoFn) {
+      // `actions` is either a function (the plain Undo case) or a list of
+      // {label, fn}. A sticky toast never auto-dismisses — used when the
+      // viewer has to make a choice and silence would lose data either way.
+      function showToast(message, actions, opts) {
         var existing = document.querySelector(".toast");
         if (existing) existing.remove();
         var toast = document.createElement("div");
         toast.className = "toast";
         toast.innerHTML = '<span>' + escapeHtml(message) + '</span>';
-        if (undoFn) {
-          var undoBtn = document.createElement("button");
-          undoBtn.type = "button";
-          undoBtn.textContent = "Undo";
-          undoBtn.addEventListener("click", function () { undoFn(); toast.remove(); });
-          toast.appendChild(undoBtn);
-        }
+
+        var list = typeof actions === "function" ? [{ label: "Undo", fn: actions }] : (actions || []);
+        list.forEach(function (action) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = action.label;
+          btn.addEventListener("click", function () { toast.remove(); action.fn(); });
+          toast.appendChild(btn);
+        });
+
         document.body.appendChild(toast);
-        setTimeout(function () { if (toast.parentNode) toast.remove(); }, 6000);
+        if (!(opts && opts.sticky)) {
+          setTimeout(function () { if (toast.parentNode) toast.remove(); }, 6000);
+        }
       }
 
       function deleteCoin(id) {
@@ -1022,6 +1954,333 @@
           render();
           persist();
         });
+      }
+
+      // Snapshots the price on screen as the entry price. It is deliberately
+      // the *displayed* price rather than a fresh fetch: the number you were
+      // looking at when you decided to buy is the one you meant, and a fetch
+      // here could quietly record a different price than the one shown.
+      function markBought(id) {
+        var coin = state.find(function (c) { return c.id === id; });
+        if (!coin) return;
+        if (!isFinite(parseNumeric(coin.price)) || parseNumeric(coin.price) <= 0) {
+          showToast("Add a usable price first, then mark it bought");
+          return;
+        }
+        var prevPrice = coin.entryPrice;
+        var prevDate = coin.entryDate;
+        coin.entryPrice = String(parseNumeric(coin.price));
+        coin.entryDate = todayISO();
+        render();
+        persist();
+        showToast("Marked " + coin.name + " bought at " + formatPrice(coin.entryPrice), function () {
+          coin.entryPrice = prevPrice;
+          coin.entryDate = prevDate;
+          render();
+          persist();
+        });
+      }
+
+      // CoinGecko is queried by its own coin id, which the watchlist may not
+      // have yet for coins added before this existed or added by hand. The
+      // resolved id is cached back onto the coin so this search runs at most
+      // once per coin.
+      function resolveGeckoId(coin) {
+        if (coin.geckoId) return Promise.resolve(coin.geckoId);
+        var slug = coin.cmcUrl ? getCoinSlug(coin.cmcUrl) : "";
+        // Same resolver the form uses, so a coin saved from a "-sol" style
+        // link resolves on refresh too rather than silently never updating.
+        if (slug) {
+          return resolveCoin(slug).then(function (match) {
+            return match ? match.id : "";
+          }).catch(function () { return ""; });
+        }
+        var query = coin.symbol || coin.name;
+        if (!query) return Promise.resolve("");
+        return searchCoinGecko(query).then(function (coins) {
+          var best = null;
+          coins.forEach(function (c) {
+            var score = scoreCandidate(c, query, query);
+            if (!best || score > best.score ||
+              (score === best.score && rankOf(c) < rankOf(best.coin))) best = { coin: c, score: score };
+          });
+          return best ? best.coin.id : "";
+        }).catch(function () { return ""; });
+      }
+
+      function setRefreshing(isBusy) {
+        refreshing = isBusy;
+        var btn = document.getElementById("refresh-btn");
+        if (btn) {
+          btn.disabled = isBusy;
+          btn.textContent = isBusy ? "Refreshing…" : "Refresh prices";
+        }
+        renderRefreshMeta();
+      }
+
+      function refreshPrices() {
+        if (refreshing) return;
+        if (state.length === 0) { showToast("Nothing to refresh yet"); return; }
+        setRefreshing(true);
+
+        var targets = state.slice();
+        // Unknown ids are resolved one at a time rather than in parallel:
+        // CoinGecko's free tier rate-limits bursts, and a 429 here would
+        // poison the ids cache with empty strings for the whole list.
+        var chain = Promise.resolve();
+        targets.forEach(function (coin) {
+          chain = chain.then(function () {
+            return resolveGeckoId(coin).then(function (id) { if (id) coin.geckoId = id; });
+          });
+        });
+
+        chain.then(function () {
+          var ids = [];
+          targets.forEach(function (c) {
+            if (c.geckoId && ids.indexOf(c.geckoId) === -1) ids.push(c.geckoId);
+          });
+          if (!ids.length) throw new Error("no ids resolved");
+          return fetch("https://api.coingecko.com/api/v3/simple/price?ids=" + encodeURIComponent(ids.join(",")) + "&vs_currencies=usd");
+        }).then(function (r) {
+          if (!r.ok) throw new Error("price fetch failed");
+          return r.json();
+        }).then(function (data) {
+          var updated = 0;
+          var now = Date.now();
+          targets.forEach(function (coin) {
+            var quote = coin.geckoId ? data[coin.geckoId] : null;
+            if (quote && quote.usd != null) {
+              coin.price = String(quote.usd);
+              coin.priceAt = now;
+              updated++;
+            }
+          });
+          setRefreshing(false);
+          render();
+          persist();
+          if (updated === 0) {
+            showToast("Couldn't match any of these coins on CoinGecko");
+          } else {
+            var missed = targets.length - updated;
+            showToast("Updated " + updated + " price" + (updated === 1 ? "" : "s") + (missed ? " · " + missed + " not found" : ""));
+          }
+        }).catch(function () {
+          setRefreshing(false);
+          render();
+          showToast("Couldn't refresh prices — check your connection and try again");
+        });
+      }
+
+      // --- cloud backup ---------------------------------------------------
+      // Credentials live in localStorage and nowhere else. They are never
+      // written into the document the page publishes, so a shared copy of
+      // this file carries the watchlist but not the keys to the cloud row.
+
+      var CLOUD_KEY = "coin-watchlist-cloud";
+      var cloud = { url: "", anonKey: "", syncKey: "", lastRemoteAt: null, pending: false };
+      var cloudState = "off";
+      var cloudMessage = "Not connected.";
+      var cloudPushTimer = null;
+
+      function loadCloudConfig() {
+        try {
+          var raw = localStorage.getItem(CLOUD_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") cloud = Object.assign(cloud, parsed);
+          }
+        } catch (e) { }
+      }
+
+      function saveCloudConfig() {
+        try { localStorage.setItem(CLOUD_KEY, JSON.stringify(cloud)); } catch (e) { }
+      }
+
+      function cloudConfigured() {
+        return !!(cloud.url && cloud.anonKey && cloud.syncKey);
+      }
+
+      function newSyncKey() {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+          var r = (Math.random() * 16) | 0;
+          return (c === "x" ? r : ((r & 0x3) | 0x8)).toString(16);
+        });
+      }
+
+      function tsOf(value) {
+        var n = Date.parse(value);
+        return isFinite(n) ? n : 0;
+      }
+
+      function describeCloudError(status, body) {
+        if (status === 404) return "Couldn't find the sync functions — run the setup SQL in Supabase first.";
+        if (status === 401 || status === 403) return "Supabase rejected the key — check the anon key.";
+        if (status === 400 && /invalid input syntax for type uuid/i.test(body || "")) {
+          return "That sync key isn't a valid UUID — use New to generate one.";
+        }
+        return "Supabase returned an error (" + status + ").";
+      }
+
+      function cloudRpc(fnName, body) {
+        var base = String(cloud.url || "").trim().replace(/\/+$/, "");
+        return fetch(base + "/rest/v1/rpc/" + fnName, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": cloud.anonKey,
+            "Authorization": "Bearer " + cloud.anonKey
+          },
+          body: JSON.stringify(body)
+        }).then(function (res) {
+          if (!res.ok) {
+            return res.text().then(function (text) {
+              throw new Error(describeCloudError(res.status, text));
+            });
+          }
+          return res.json();
+        });
+      }
+
+      function setCloudState(next, message) {
+        cloudState = next;
+        if (message !== undefined) cloudMessage = message;
+        renderCloudStatus();
+      }
+
+      function renderCloudStatus() {
+        var labels = { off: "Backup off", busy: "Syncing…", on: "Backed up", error: "Sync error", conflict: "Needs a choice" };
+        var modifiers = { on: " is-on", busy: " is-busy", error: " is-error", conflict: " is-conflict" };
+        var label = document.getElementById("cloud-btn-label");
+        var chip = document.getElementById("cloud-btn");
+        var status = document.getElementById("cloud-status");
+        if (label) label.textContent = labels[cloudState] || labels.off;
+        if (chip) chip.className = "sync-chip" + (modifiers[cloudState] || "");
+        if (status) status.textContent = cloudMessage;
+      }
+
+      // Asks rather than picks. Both sides hold edits the other doesn't, so
+      // either automatic answer would silently destroy someone's work.
+      function offerCloudChoice(remoteData, remoteAt) {
+        setCloudState("conflict", "This device and the cloud have both changed since the last sync. Choose which copy to keep.");
+        showToast("Cloud copy differs from this device", [
+          {
+            label: "Keep this device", fn: function () {
+              cloud.lastRemoteAt = remoteAt;
+              cloud.pending = true;
+              saveCloudConfig();
+              cloudPush();
+            }
+          },
+          {
+            label: "Use cloud copy", fn: function () {
+              state = Array.isArray(remoteData) ? remoteData : [];
+              cloud.lastRemoteAt = remoteAt;
+              cloud.pending = false;
+              saveCloudConfig();
+              persistLocal();
+              render();
+              setCloudState("on", "Loaded the cloud copy.");
+            }
+          }
+        ], { sticky: true });
+      }
+
+      function cloudPull() {
+        if (!cloudConfigured()) return Promise.resolve();
+        setCloudState("busy", "Checking the cloud copy…");
+        return cloudRpc("watchlist_load", { key: cloud.syncKey }).then(function (res) {
+          var remoteAt = res && res.updated_at ? res.updated_at : null;
+          var remoteData = res && Array.isArray(res.data) ? res.data : [];
+
+          // Nothing stored under this key yet — this device seeds it.
+          if (!remoteAt) return cloudPush();
+
+          var remoteIsNewer = tsOf(remoteAt) > tsOf(cloud.lastRemoteAt);
+          if (remoteIsNewer && cloud.pending) { offerCloudChoice(remoteData, remoteAt); return; }
+          if (remoteIsNewer) {
+            state = remoteData;
+            cloud.lastRemoteAt = remoteAt;
+            saveCloudConfig();
+            persistLocal();
+            render();
+            setCloudState("on", "Loaded the cloud copy.");
+            return;
+          }
+          if (cloud.pending) return cloudPush();
+          setCloudState("on", "Up to date.");
+        }).catch(function (err) {
+          setCloudState("error", (err.message || "Couldn't reach Supabase.") + " Your list is still saved in this browser.");
+        });
+      }
+
+      function cloudPush() {
+        if (!cloudConfigured()) return Promise.resolve();
+        setCloudState("busy", "Saving to the cloud…");
+        return cloudRpc("watchlist_save", {
+          key: cloud.syncKey,
+          payload: state,
+          expected: cloud.lastRemoteAt
+        }).then(function (res) {
+          if (res && res.ok === false) { offerCloudChoice(res.data, res.updated_at); return; }
+          if (res && res.updated_at) cloud.lastRemoteAt = res.updated_at;
+          cloud.pending = false;
+          saveCloudConfig();
+          setCloudState("on", "Saved just now.");
+        }).catch(function (err) {
+          setCloudState("error", (err.message || "Couldn't reach Supabase.") + " Your list is still saved in this browser.");
+        });
+      }
+
+      function openCloudPanel() {
+        document.getElementById("field-supabase-url").value = cloud.url || "";
+        document.getElementById("field-supabase-key").value = cloud.anonKey || "";
+        document.getElementById("field-sync-key").value = cloud.syncKey || newSyncKey();
+        document.getElementById("setup-sql").textContent = SETUP_SQL;
+        formPanel.hidden = true;
+        cloudPanel.hidden = false;
+        renderCloudStatus();
+        cloudPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      function connectCloud() {
+        var url = document.getElementById("field-supabase-url").value.trim();
+        var anonKey = document.getElementById("field-supabase-key").value.trim();
+        var syncKey = document.getElementById("field-sync-key").value.trim();
+        if (!url || !anonKey || !syncKey) {
+          setCloudState(cloudState, "Fill in all three fields to connect.");
+          return;
+        }
+        // Pointing at a different project or key means this device knows
+        // nothing about what's stored there; anything local counts as an
+        // unsynced change so an occupied row raises the choice instead of
+        // being overwritten.
+        var switching = url !== cloud.url || syncKey !== cloud.syncKey;
+        cloud.url = url;
+        cloud.anonKey = anonKey;
+        cloud.syncKey = syncKey;
+        if (switching) {
+          cloud.lastRemoteAt = null;
+          cloud.pending = state.length > 0;
+        }
+        saveCloudConfig();
+        cloudPull();
+      }
+
+      function disconnectCloud() {
+        cloud = { url: "", anonKey: "", syncKey: "", lastRemoteAt: null, pending: false };
+        try { localStorage.removeItem(CLOUD_KEY); } catch (e) { }
+        setCloudState("off", "Not connected. Your list is still saved in this browser.");
+        showToast("Cloud backup disconnected");
+      }
+
+      function copyText(text, message) {
+        var done = function () { showToast(message); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, done);
+        } else {
+          done();
+        }
       }
 
       function copyContract(id) {
@@ -1049,13 +2308,16 @@
         return (
           '<div class="app" id="app-root">' +
           '<header class="topbar">' +
+          '<div class="titles">' +
           '<p class="eyebrow">Personal research</p>' +
           '<h1>Coin Watchlist</h1>' +
-          '<p class="tagline">Every coin you\'re weighing up — contract, entry price, and how big a swing you think it has.</p>' +
+          '<p class="tagline">Every coin you\'re weighing up — contract, target, and how far it\'s moved since the day you bought.</p>' +
+          '</div>' +
+          '<button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings"><span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span></button>' +
           '</header>' +
           '<div class="disclaimer">' +
           '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1L15 14H1L8 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6V9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="11.7" r="0.8" fill="currentColor"/></svg>' +
-          '<span>Coin details can be filled from a CoinMarketCap link; prices are a snapshot, not live tracking. Not financial advice; double-check any contract address yourself before you buy.</span>' +
+          '<span>Prices only change when you hit Refresh — nothing here tracks live, and gains are worked out from the entry price you saved. Not financial advice; double-check any contract address yourself before you buy.</span>' +
           '</div>' +
           '<div class="stats" id="stats-root">' + renderStatsHTML(currentState) + '</div>' +
           '<div class="controls">' +
@@ -1063,30 +2325,54 @@
           '<select id="sort-select" aria-label="Sort coins">' +
           '<option value="target-desc">Highest target ×</option>' +
           '<option value="target-asc">Lowest target ×</option>' +
+          '<option value="pnl-desc">Best since buy</option>' +
+          '<option value="pnl-asc">Worst since buy</option>' +
           '<option value="name-asc">Name A–Z</option>' +
           '<option value="recent">Recently added</option>' +
           '</select>' +
+          '<button class="btn" id="refresh-btn" type="button">Refresh prices</button>' +
+          '<span class="refresh-meta" id="refresh-meta" aria-live="polite"></span>' +
           '<button class="btn btn-primary" id="add-btn" type="button">+ Add coin</button>' +
           '</div>' +
+          // The credential inputs are emitted empty on purpose: keys live in
+          // localStorage, so a published or shared copy of this page carries
+          // the watchlist without carrying access to the cloud row.
+          '<section class="form-panel" id="cloud-panel" hidden>' +
+          '<h2>Cloud backup</h2>' +
+          '<p class="form-sub">Keeps a copy of your watchlist in your own Supabase project, so clearing this browser doesn\'t lose it. Your keys stay in this browser only — they\'re never written into the page.</p>' +
+          '<div class="form-grid">' +
+          '<div class="field span-2"><label for="field-supabase-url">Supabase project URL</label><input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co"><span class="hint">Project settings → Data API → Project URL</span></div>' +
+          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…"><span class="hint">The publishable anon key — safe to use here, it grants nothing on its own</span></div>' +
+          '<div class="field span-2"><label for="field-sync-key">Sync key</label><div class="key-row"><input type="text" id="field-sync-key" class="mono" placeholder="Generated for you" spellcheck="false"><button type="button" class="btn" id="copy-key-btn">Copy</button><button type="button" class="btn" id="new-key-btn">New</button></div><span class="hint">This is the secret that unlocks your row. Save it somewhere — enter the same key on another device to load the same watchlist.</span></div>' +
+          '</div>' +
+          '<details class="sql-details"><summary>First time? Run this SQL in your Supabase SQL editor</summary><pre class="sql-block" id="setup-sql"></pre><button type="button" class="btn" id="copy-sql-btn">Copy SQL</button></details>' +
+          '<p class="sync-note" id="cloud-status">Not connected.</p>' +
+          '<div class="form-actions"><button type="button" class="btn btn-ghost" id="cloud-disconnect-btn">Disconnect</button><button type="button" class="btn btn-ghost" id="cloud-close-btn">Close</button><button type="button" class="btn btn-primary" id="cloud-save-btn">Connect &amp; sync</button></div>' +
+          '</section>' +
           '<section class="form-panel" id="form-panel" hidden>' +
           '<h2 id="form-title">Add a coin</h2>' +
-          '<p class="form-sub">Paste a CoinMarketCap link to fill in the coin details, then add your price, target, and exchange.</p>' +
+          '<p class="form-sub">Search by name or ticker, paste a contract address, or drop in a link — it fills the rest.</p>' +
           '<form id="coin-form" novalidate>' +
           '<input type="hidden" id="field-id">' +
           '<div class="form-grid">' +
-          '<div class="field span-2"><label for="field-cmc-url">CoinMarketCap link</label><input type="url" id="field-cmc-url" placeholder="https://coinmarketcap.com/currencies/bitcoin/" autocomplete="url"><span class="lookup-status" id="lookup-status" aria-live="polite">We\'ll fill the name, ticker, price, and contract when available.</span></div>' +
+          '<div class="field span-2"><label for="field-cmc-url">Find the coin</label><input type="text" id="field-cmc-url" placeholder="Name, ticker, contract address, or a CoinMarketCap link" autocomplete="off" spellcheck="false"><div class="lookup-results" id="lookup-results" hidden></div><span class="lookup-status" id="lookup-status" aria-live="polite">Type a name or ticker, paste a contract address, or drop in a CoinMarketCap or CoinGecko link.</span></div>' +
           '<div class="field"><label for="field-name">Coin name *</label><input type="text" id="field-name" placeholder="e.g. Fetch.ai" required></div>' +
           '<div class="field"><label for="field-symbol">Symbol / ticker *</label><input type="text" id="field-symbol" placeholder="e.g. FET" required></div>' +
           '<div class="field span-2"><label for="field-contract">Contract address</label><input type="text" id="field-contract" class="mono" placeholder="0x… (leave blank for native coins like BTC or ETH)"></div>' +
-          '<div class="field"><label for="field-price">Price *</label><input type="text" id="field-price" placeholder="e.g. 0.42" required><span class="hint">Whatever you\'re seeing right now — you keep this current</span></div>' +
+          '<div class="field"><label for="field-price">Price now *</label><input type="text" id="field-price" placeholder="e.g. 0.42" required><span class="hint">Refresh prices updates this for you</span></div>' +
           '<div class="field"><label for="field-target">Target, in × *</label><input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required><span class="hint">How many times over you think this could go</span></div>' +
-          '<div class="field span-2"><label for="field-buy">Where to buy *</label><input type="text" id="field-buy" placeholder="e.g. Uniswap, Coinbase, Binance" required></div>' +
+          '<div class="field"><label for="field-entry-price">Bought at</label><input type="text" id="field-entry-price" placeholder="e.g. 0.30"><span class="hint">The price you paid — leave blank if you don\'t hold it yet</span></div>' +
+          '<div class="field"><label for="field-entry-date">Date bought</label><input type="date" id="field-entry-date"><span class="hint">Optional, just for your own records</span></div>' +
+          // The venue list is built by script (from the lookup plus the
+          // built-in venues), so the select ships empty like the SQL block.
+          '<div class="field span-2"><label for="field-buy-select">Where to buy *</label><select id="field-buy-select"></select><input type="text" id="field-buy" class="other-input" placeholder="Name the exchange or DEX" hidden><span class="hint">Paste a link above and this fills with the exchanges actually trading it</span></div>' +
           '<div class="field span-2"><label for="field-notes">Notes</label><textarea id="field-notes" rows="2" placeholder="Why you\'re watching it, red flags, anything worth remembering"></textarea></div>' +
           '</div>' +
+          '<p class="form-error" id="form-error" hidden></p>' +
           '<div class="form-actions"><button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button><button type="submit" class="btn btn-primary" id="save-btn">Save coin</button></div>' +
           '</form>' +
           '</section>' +
-          '<div class="row-head" id="row-head"' + rowHeadAttr + '><span>Coin</span><span>Contract</span><span>Price</span><span>Target</span><span>Where to buy</span><span></span></div>' +
+          '<div class="row-head" id="row-head"' + rowHeadAttr + '><span>Coin</span><span>Contract</span><span>Price</span><span>Since buy</span><span>Target</span><span>Where to buy</span><span></span></div>' +
           '<section class="list-root" id="list-root">' + listHtml + '</section>' +
           // Escaping angle brackets keeps a stray closing-script sequence
           // inside someone's notes field from prematurely ending this tag
@@ -1113,8 +2399,23 @@
         );
       }
 
-      function persist() {
+      function persistLocal() {
         try { localStorage.setItem("coin-watchlist-backup", JSON.stringify(state)); } catch (e) { }
+      }
+
+      function persist() {
+        persistLocal();
+
+        // Mark the change unsynced before the network call, so an edit made
+        // offline is still remembered as pending after a reload.
+        if (cloudConfigured()) {
+          cloud.pending = true;
+          saveCloudConfig();
+          setCloudState("busy", "Saving to the cloud…");
+          clearTimeout(cloudPushTimer);
+          cloudPushTimer = setTimeout(cloudPush, 1200);
+        }
+
         if (!window.claude || typeof window.claude.use !== "function") return;
         window.claude.use("artifact").then(function (artifact) {
           if (!artifact) return;
@@ -1127,11 +2428,38 @@
       }
 
       document.getElementById("add-btn").addEventListener("click", function () { openForm(null); });
+      document.getElementById("refresh-btn").addEventListener("click", refreshPrices);
       document.getElementById("cancel-btn").addEventListener("click", closeForm);
+
+      document.getElementById("cloud-btn").addEventListener("click", function () {
+        if (cloudPanel.hidden) openCloudPanel(); else cloudPanel.hidden = true;
+      });
+      document.getElementById("cloud-close-btn").addEventListener("click", function () { cloudPanel.hidden = true; });
+      document.getElementById("cloud-save-btn").addEventListener("click", connectCloud);
+      document.getElementById("cloud-disconnect-btn").addEventListener("click", disconnectCloud);
+      document.getElementById("copy-key-btn").addEventListener("click", function () {
+        copyText(document.getElementById("field-sync-key").value, "Copied sync key — keep it somewhere safe");
+      });
+      document.getElementById("new-key-btn").addEventListener("click", function () {
+        document.getElementById("field-sync-key").value = newSyncKey();
+      });
+      document.getElementById("copy-sql-btn").addEventListener("click", function () {
+        copyText(SETUP_SQL, "Copied the setup SQL");
+      });
       coinForm.addEventListener("submit", handleSubmit);
-      document.getElementById("field-cmc-url").addEventListener("blur", function (e) {
+      document.getElementById("field-buy-select").addEventListener("change", function () {
+        syncBuyOther();
+        setFormError("");
+      });
+      // Searches as you type; a pasted link or address resolves the same way.
+      document.getElementById("field-cmc-url").addEventListener("input", function (e) {
+        var value = e.target.value;
         clearTimeout(lookupTimer);
-        lookupTimer = setTimeout(function () { lookupCoinMarketCap(e.target.value); }, 150);
+        lookupTimer = setTimeout(function () { runLookup(value); }, 450);
+      });
+      document.getElementById("lookup-results").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-coin-id]");
+        if (btn) pickSearchResult(btn.getAttribute("data-coin-id"));
       });
       document.getElementById("search-input").addEventListener("input", function (e) { filterText = e.target.value; render(); });
       document.getElementById("sort-select").addEventListener("change", function (e) { sortKey = e.target.value; render(); });
@@ -1143,6 +2471,7 @@
         var id = btn.getAttribute("data-id");
         var action = btn.getAttribute("data-action");
         if (action === "copy") copyContract(id);
+        else if (action === "mark-bought") markBought(id);
         else if (action === "delete") deleteCoin(id);
         else if (action === "edit") {
           var coin = state.find(function (c) { return c.id === id; });
@@ -1151,6 +2480,12 @@
       });
 
       render();
+
+      // Cloud last: the page is fully usable from the local copy before any
+      // network call is attempted, and stays usable if that call never lands.
+      loadCloudConfig();
+      renderCloudStatus();
+      if (cloudConfigured()) cloudPull();
     })();
   </script>
 
