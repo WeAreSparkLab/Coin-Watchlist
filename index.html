@@ -601,6 +601,10 @@
       padding-top: 14px;
     }
 
+    .nested-grid {
+      margin-top: 14px;
+    }
+
     .sql-details summary {
       cursor: pointer;
       font-size: 0.82rem;
@@ -1040,8 +1044,8 @@
 
     <section class="form-panel" id="cloud-panel" hidden>
       <h2>Your account</h2>
-      <p class="form-sub">Sign in with the same account on your phone and your laptop and they'll share one
-        watchlist. Everything lives in your own Supabase project; your password is never stored on this device.</p>
+      <p class="form-sub">Sign in with the same account on your phone and your laptop and they'll share one watchlist.
+        Your password is never stored on this device.</p>
 
       <div id="account-signed-in" hidden>
         <p class="account-who">Signed in as <strong id="account-email"></strong></p>
@@ -1049,16 +1053,6 @@
 
       <div id="account-form">
         <div class="form-grid">
-          <div class="field span-2">
-            <label for="field-supabase-url">Supabase project URL</label>
-            <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co">
-            <span class="hint">Project settings → Data API → Project URL</span>
-          </div>
-          <div class="field span-2">
-            <label for="field-supabase-key">Anon public key</label>
-            <input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…">
-            <span class="hint">The publishable anon key — safe here, it grants nothing on its own</span>
-          </div>
           <div class="field">
             <label for="field-email">Email</label>
             <input type="email" id="field-email" placeholder="you@example.com" autocomplete="username">
@@ -1069,13 +1063,25 @@
               autocomplete="current-password">
           </div>
         </div>
+        <details class="sql-details">
+          <summary>Use a different Supabase project</summary>
+          <div class="form-grid nested-grid">
+            <div class="field span-2">
+              <label for="field-supabase-url">Supabase project URL</label>
+              <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co">
+              <span class="hint">Settings → Data API → Project URL</span>
+            </div>
+            <div class="field span-2">
+              <label for="field-supabase-key">Anon public key</label>
+              <input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…">
+              <span class="hint">Settings → Data API → Project API keys → anon public</span>
+            </div>
+          </div>
+          <p class="sync-note">Then run this once in that project's SQL editor:</p>
+          <pre class="sql-block" id="setup-sql"></pre>
+          <button type="button" class="btn" id="copy-sql-btn">Copy SQL</button>
+        </details>
       </div>
-
-      <details class="sql-details">
-        <summary>First time? Run this SQL in your Supabase SQL editor</summary>
-        <pre class="sql-block" id="setup-sql"></pre>
-        <button type="button" class="btn" id="copy-sql-btn">Copy SQL</button>
-      </details>
       <p class="sync-note" id="cloud-status">Not signed in.</p>
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" id="signout-btn">Sign out</button>
@@ -2416,6 +2422,14 @@
       // written into the document the page publishes, so a shared copy of
       // this file carries the watchlist but not the keys to the cloud row.
 
+      // The backend ships with the app, so signing in needs nothing but an
+      // email and a password. The anon key is meant to be public: it is the
+      // browser-side key, and row level security means it reads nothing on
+      // its own — only a signed-in user's token can reach that user's row.
+      // Point these elsewhere (or use the panel) to run your own project.
+      var DEFAULT_PROJECT_URL = "https://ulwwokctptrugpsjeloo.supabase.co";
+      var DEFAULT_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsd3dva2N0cHRydWdwc2plbG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0NjU5MTUsImV4cCI6MjEwMDA0MTkxNX0.P-B1OEb_DMyt4V0CGcahwEg4csmBsjICPcGy1jPkd-E";
+
       var CLOUD_KEY = "coin-watchlist-cloud";
       var cloud = {
         url: "", anonKey: "",
@@ -2434,6 +2448,10 @@
             if (parsed && typeof parsed === "object") cloud = Object.assign(cloud, parsed);
           }
         } catch (e) { }
+        // Fall back to the bundled project so a fresh install is ready to
+        // sign in; anything the viewer saved for themselves still wins.
+        if (!cloud.url) cloud.url = DEFAULT_PROJECT_URL;
+        if (!cloud.anonKey) cloud.anonKey = DEFAULT_ANON_KEY;
       }
 
       function saveCloudConfig() {
@@ -2810,13 +2828,19 @@
           '<div id="account-signed-in" hidden><p class="account-who">Signed in as <strong id="account-email"></strong></p></div>' +
           '<div id="account-form">' +
           '<div class="form-grid">' +
-          '<div class="field span-2"><label for="field-supabase-url">Supabase project URL</label><input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co"><span class="hint">Project settings → Data API → Project URL</span></div>' +
-          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…"><span class="hint">The publishable anon key — safe here, it grants nothing on its own</span></div>' +
           '<div class="field"><label for="field-email">Email</label><input type="email" id="field-email" placeholder="you@example.com" autocomplete="username"></div>' +
           '<div class="field"><label for="field-password">Password</label><input type="password" id="field-password" placeholder="At least six characters" autocomplete="current-password"></div>' +
           '</div>' +
+          '<details class="sql-details"><summary>Use a different Supabase project</summary>' +
+          '<div class="form-grid nested-grid">' +
+          '<div class="field span-2"><label for="field-supabase-url">Supabase project URL</label><input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co"><span class="hint">Settings → Data API → Project URL</span></div>' +
+          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…"><span class="hint">Settings → Data API → Project API keys → anon public</span></div>' +
           '</div>' +
-          '<details class="sql-details"><summary>First time? Run this SQL in your Supabase SQL editor</summary><pre class="sql-block" id="setup-sql"></pre><button type="button" class="btn" id="copy-sql-btn">Copy SQL</button></details>' +
+          '<p class="sync-note">Then run this once in that project\'s SQL editor:</p>' +
+          '<pre class="sql-block" id="setup-sql"></pre>' +
+          '<button type="button" class="btn" id="copy-sql-btn">Copy SQL</button>' +
+          '</details>' +
+          '</div>' +
           '<p class="sync-note" id="cloud-status">Not signed in.</p>' +
           '<div class="form-actions"><button type="button" class="btn btn-ghost" id="signout-btn">Sign out</button><button type="button" class="btn btn-ghost" id="cloud-close-btn">Close</button><button type="button" class="btn" id="signup-btn">Create account</button><button type="button" class="btn btn-primary" id="signin-btn">Sign in</button></div>' +
           '</section>' +
