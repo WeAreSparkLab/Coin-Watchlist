@@ -1637,9 +1637,10 @@
         return known.concat(others).slice(0, 14);
       }
 
-      var COMMON_VENUES = ["Binance", "Coinbase", "Kraken", "Bybit", "OKX", "KuCoin", "Bitget", "MEXC",
-        "Gate.io", "Crypto.com", "Hyperliquid", "Uniswap", "PancakeSwap", "Raydium", "Jupiter", "Orca",
-        "Aerodrome", "Curve", "SushiSwap", "1inch"];
+      // The places you actually use. Anywhere else is still reachable: a
+      // lookup adds the venues really trading a coin under "Trading now",
+      // and "Other…" takes a free-text name.
+      var COMMON_VENUES = ["PancakeSwap", "Crypto.com", "Raydium", "SushiSwap", "MetaMask", "Solflare"];
 
       function buyOption(value, selected) {
         return '<option value="' + escapeHtml(value) + '"' + (selected ? ' selected' : '') + '>' + escapeHtml(value) + '</option>';
