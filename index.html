@@ -1068,12 +1068,14 @@
           <div class="form-grid nested-grid">
             <div class="field span-2">
               <label for="field-supabase-url">Supabase project URL</label>
-              <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co">
+              <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co"
+                autocomplete="off" spellcheck="false" data-lpignore="true">
               <span class="hint">Settings → Data API → Project URL</span>
             </div>
             <div class="field span-2">
               <label for="field-supabase-key">Anon public key</label>
-              <input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…">
+              <input type="text" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…" autocomplete="off"
+                spellcheck="false" data-lpignore="true">
               <span class="hint">Settings → Data API → Project API keys → anon public</span>
             </div>
           </div>
@@ -2440,6 +2442,19 @@
       var cloudMessage = "Not signed in.";
       var cloudPushTimer = null;
 
+      // A Supabase browser key is either a JWT or an sb_publishable_ token.
+      // Checking the shape matters because a password manager will happily
+      // autofill a saved password into a key box, and sending that as the
+      // API key fails with a message about the key that hides the real cause.
+      function looksLikeAnonKey(value) {
+        var v = String(value || "").trim();
+        return /^eyJ[\w-]+\.[\w-]+\.[\w-]+$/.test(v) || /^sb_publishable_[\w-]+$/.test(v);
+      }
+
+      function looksLikeProjectUrl(value) {
+        return /^https:\/\/[^\s/]+\.[^\s/]+/i.test(String(value || "").trim());
+      }
+
       function loadCloudConfig() {
         try {
           var raw = localStorage.getItem(CLOUD_KEY);
@@ -2449,9 +2464,10 @@
           }
         } catch (e) { }
         // Fall back to the bundled project so a fresh install is ready to
-        // sign in; anything the viewer saved for themselves still wins.
-        if (!cloud.url) cloud.url = DEFAULT_PROJECT_URL;
-        if (!cloud.anonKey) cloud.anonKey = DEFAULT_ANON_KEY;
+        // sign in. Anything stored that isn't a usable project setting is
+        // repaired here rather than left to fail on every request.
+        if (!looksLikeProjectUrl(cloud.url)) cloud.url = DEFAULT_PROJECT_URL;
+        if (!looksLikeAnonKey(cloud.anonKey)) cloud.anonKey = DEFAULT_ANON_KEY;
       }
 
       function saveCloudConfig() {
@@ -2694,6 +2710,10 @@
       function readProjectFields() {
         var url = document.getElementById("field-supabase-url").value.trim();
         var anonKey = document.getElementById("field-supabase-key").value.trim();
+        // Ignore anything that isn't actually a project setting — an empty
+        // box, or a password the browser autofilled — and keep what works.
+        if (!looksLikeProjectUrl(url)) url = cloud.url || DEFAULT_PROJECT_URL;
+        if (!looksLikeAnonKey(anonKey)) anonKey = cloud.anonKey || DEFAULT_ANON_KEY;
         if (url !== cloud.url || anonKey !== cloud.anonKey) {
           // A different project knows nothing about this device, so anything
           // local counts as unsynced and an occupied account raises the
@@ -2833,8 +2853,8 @@
           '</div>' +
           '<details class="sql-details"><summary>Use a different Supabase project</summary>' +
           '<div class="form-grid nested-grid">' +
-          '<div class="field span-2"><label for="field-supabase-url">Supabase project URL</label><input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co"><span class="hint">Settings → Data API → Project URL</span></div>' +
-          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…"><span class="hint">Settings → Data API → Project API keys → anon public</span></div>' +
+          '<div class="field span-2"><label for="field-supabase-url">Supabase project URL</label><input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co" autocomplete="off" spellcheck="false" data-lpignore="true"><span class="hint">Settings → Data API → Project URL</span></div>' +
+          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="text" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…" autocomplete="off" spellcheck="false" data-lpignore="true"><span class="hint">Settings → Data API → Project API keys → anon public</span></div>' +
           '</div>' +
           '<p class="sync-note">Then run this once in that project\'s SQL editor:</p>' +
           '<pre class="sql-block" id="setup-sql"></pre>' +

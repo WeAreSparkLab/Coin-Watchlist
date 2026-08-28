@@ -1,6 +1,6 @@
 // Offline shell for Coin Watchlist.
 // Bump CACHE when the shell changes so old copies are dropped on activate.
-var CACHE = "coin-watchlist-v2";
+var CACHE = "coin-watchlist-v3";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest",
              "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png",
              "./favicon.ico", "./favicon-32.png", "./favicon-16.png"];
