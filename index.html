@@ -254,6 +254,9 @@
     input[type="search"],
     input[type="text"],
     input[type="number"],
+    input[type="url"],
+    input[type="password"],
+    input[type="date"],
     textarea,
     select {
       font-family: inherit;
@@ -412,6 +415,42 @@
     .field .hint {
       font-size: 0.75rem;
       color: var(--text-faint);
+    }
+
+    .check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      width: fit-content;
+    }
+
+    /* Sized explicitly: the global input rule deliberately skips checkboxes,
+       so this one keeps its native box rather than stretching. */
+    .check-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      flex: none;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .meme-badge {
+      display: inline-block;
+      margin-left: 7px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      vertical-align: middle;
     }
 
     .lookup-status {
@@ -1033,6 +1072,13 @@
             <span class="hint">Optional, just for your own records</span>
           </div>
           <div class="field span-2">
+            <label class="check-label" for="field-meme">
+              <input type="checkbox" id="field-meme">
+              <span>Meme coin</span>
+            </label>
+            <span class="hint">Tags it in the list so the punts stand out from the rest</span>
+          </div>
+          <div class="field span-2">
             <label for="field-buy-select">Where to buy *</label>
             <select id="field-buy-select"></select>
             <input type="text" id="field-buy" class="other-input" placeholder="Name the exchange or DEX" hidden>
@@ -1327,6 +1373,8 @@
           : '<span class="contract-chip empty">native / none</span>';
         var notesHtml = coin.notes ? '<div class="row-notes">' + escapeHtml(coin.notes) + '</div>' : "";
 
+        var memeBadge = coin.isMeme ? '<span class="meme-badge" title="Meme coin">meme</span>' : "";
+
         var age = coin.priceAt ? '<span class="price-age">' + escapeHtml(relativeTime(coin.priceAt)) + '</span>' : "";
 
         var pct = pnlPercent(coin);
@@ -1341,7 +1389,7 @@
 
         return (
           '<article class="row" data-id="' + coin.id + '">' +
-          '<div class="cell-coin" data-label="Coin"><div class="coin-name">' + escapeHtml(coin.name) + '</div><div class="coin-symbol">' + escapeHtml(coin.symbol) + '</div></div>' +
+          '<div class="cell-coin" data-label="Coin"><div class="coin-name">' + escapeHtml(coin.name) + memeBadge + '</div><div class="coin-symbol">' + escapeHtml(coin.symbol) + '</div></div>' +
           '<div data-label="Contract">' + contractHtml + '</div>' +
           '<div class="cell-price" data-label="Price">' + escapeHtml(formatPrice(coin.price)) + age + '</div>' +
           '<div data-label="Since buy">' + pnlHtml + '</div>' +
@@ -1401,15 +1449,19 @@
         formTitle.textContent = coin ? "Edit coin" : "Add a coin";
         document.getElementById("field-id").value = coin ? coin.id : "";
         document.getElementById("field-cmc-url").value = coin ? (coin.cmcUrl || "") : "";
-        document.getElementById("field-name").value = coin ? coin.name : "";
-        document.getElementById("field-symbol").value = coin ? coin.symbol : "";
-        document.getElementById("field-contract").value = coin ? coin.contract : "";
-        document.getElementById("field-price").value = coin ? coin.price : "";
-        document.getElementById("field-target").value = coin ? coin.targetX : "";
+        // Coerced rather than assigned straight through: a coin missing any
+        // of these (older saved data, or a hand-edited state block) would
+        // otherwise put `undefined` in the input and throw on the next save.
+        document.getElementById("field-name").value = coin ? (coin.name || "") : "";
+        document.getElementById("field-symbol").value = coin ? (coin.symbol || "") : "";
+        document.getElementById("field-contract").value = coin ? (coin.contract || "") : "";
+        document.getElementById("field-price").value = coin ? (coin.price || "") : "";
+        document.getElementById("field-target").value = coin ? (coin.targetX || "") : "";
         document.getElementById("field-entry-price").value = coin ? (coin.entryPrice || "") : "";
         document.getElementById("field-entry-date").value = coin ? (coin.entryDate || "") : "";
+        document.getElementById("field-meme").checked = !!(coin && coin.isMeme);
         setBuyOptions(coin && coin.buyVenues, coin ? coin.buyWhere : "");
-        document.getElementById("field-notes").value = coin ? coin.notes : "";
+        document.getElementById("field-notes").value = coin ? (coin.notes || "") : "";
         hideLookupResults();
         setFormError("");
         cloudPanel.hidden = true;
@@ -2053,6 +2105,7 @@
         var targetX = document.getElementById("field-target").value;
         var entryPrice = document.getElementById("field-entry-price").value.trim();
         var entryDate = document.getElementById("field-entry-date").value;
+        var isMeme = document.getElementById("field-meme").checked;
         var buyWhere = selectedBuyWhere();
         var notes = document.getElementById("field-notes").value.trim();
 
@@ -2073,7 +2126,7 @@
         var fields = {
           name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price,
           targetX: Number(targetX), entryPrice: entryPrice, entryDate: entryDate,
-          buyWhere: buyWhere, buyVenues: pendingVenues, dexChain: pendingDexChain, notes: notes,
+          buyWhere: buyWhere, buyVenues: pendingVenues, dexChain: pendingDexChain, isMeme: isMeme, notes: notes,
           // Typing a price by hand is as good a reading as a fetched one, so
           // the freshness stamp moves either way.
           priceAt: Date.now()
@@ -2579,6 +2632,7 @@
           '<div class="field"><label for="field-target">Target, in × *</label><input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required><span class="hint">How many times over you think this could go</span></div>' +
           '<div class="field"><label for="field-entry-price">Bought at</label><input type="text" id="field-entry-price" placeholder="e.g. 0.30"><span class="hint">The price you paid — leave blank if you don\'t hold it yet</span></div>' +
           '<div class="field"><label for="field-entry-date">Date bought</label><input type="date" id="field-entry-date"><span class="hint">Optional, just for your own records</span></div>' +
+          '<div class="field span-2"><label class="check-label" for="field-meme"><input type="checkbox" id="field-meme"><span>Meme coin</span></label><span class="hint">Tags it in the list so the punts stand out from the rest</span></div>' +
           // The venue list is built by script (from the lookup plus the
           // built-in venues), so the select ships empty like the SQL block.
           '<div class="field span-2"><label for="field-buy-select">Where to buy *</label><select id="field-buy-select"></select><input type="text" id="field-buy" class="other-input" placeholder="Name the exchange or DEX" hidden><span class="hint">Paste a link above and this fills with the exchanges actually trading it</span></div>' +
