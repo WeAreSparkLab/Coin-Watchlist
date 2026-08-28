@@ -1,34 +1,56 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Coin Watchlist</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style id="page-style">
-  :root {
-    --bg: #eeede4;
-    --surface: #ffffff;
-    --surface-alt: #f6f5ec;
-    --text: #1a1b16;
-    --text-muted: #66695c;
-    --text-faint: #94978a;
-    --border: #dedcce;
-    --border-strong: #c7c5b4;
-    --accent: #9c6f1e;
-    --accent-strong: #7a5717;
-    --accent-soft: #f0e2bd;
-    --on-accent: #fdf8ec;
-    --positive: #2e6b4c;
-    --negative: #ae3b35;
-    --shadow: 0 1px 2px rgba(26, 27, 22, 0.06), 0 8px 24px -12px rgba(26, 27, 22, 0.18);
-    --radius: 10px;
-  }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+<head>
+  <meta charset="UTF-8">
+  <title>Coin Watchlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style id="page-style">
+    :root {
+      --bg: #eeede4;
+      --surface: #ffffff;
+      --surface-alt: #f6f5ec;
+      --text: #1a1b16;
+      --text-muted: #66695c;
+      --text-faint: #94978a;
+      --border: #dedcce;
+      --border-strong: #c7c5b4;
+      --accent: #9c6f1e;
+      --accent-strong: #7a5717;
+      --accent-soft: #f0e2bd;
+      --on-accent: #fdf8ec;
+      --positive: #2e6b4c;
+      --negative: #ae3b35;
+      --shadow: 0 1px 2px rgba(26, 27, 22, 0.06), 0 8px 24px -12px rgba(26, 27, 22, 0.18);
+      --radius: 10px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #15161a;
+        --surface: #1c1e23;
+        --surface-alt: #22242a;
+        --text: #ecece4;
+        --text-muted: #a2a599;
+        --text-faint: #6f7266;
+        --border: #2c2e34;
+        --border-strong: #3a3d44;
+        --accent: #dfa64c;
+        --accent-strong: #f0bb66;
+        --accent-soft: #3a2f19;
+        --on-accent: #1a1508;
+        --positive: #58b384;
+        --negative: #e2716b;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -14px rgba(0, 0, 0, 0.6);
+      }
+    }
+
+    :root[data-theme="dark"] {
       --bg: #15161a;
       --surface: #1c1e23;
       --surface-alt: #22242a;
@@ -45,860 +67,1091 @@
       --negative: #e2716b;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -14px rgba(0, 0, 0, 0.6);
     }
-  }
 
-  :root[data-theme="dark"] {
-    --bg: #15161a;
-    --surface: #1c1e23;
-    --surface-alt: #22242a;
-    --text: #ecece4;
-    --text-muted: #a2a599;
-    --text-faint: #6f7266;
-    --border: #2c2e34;
-    --border-strong: #3a3d44;
-    --accent: #dfa64c;
-    --accent-strong: #f0bb66;
-    --accent-soft: #3a2f19;
-    --on-accent: #1a1508;
-    --positive: #58b384;
-    --negative: #e2716b;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -14px rgba(0, 0, 0, 0.6);
-  }
-
-  * { box-sizing: border-box; }
-  html { color-scheme: light dark; }
-
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.5;
-  }
-
-  .app {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
-
-  .topbar { margin-bottom: 18px; }
-
-  .eyebrow {
-    margin: 0 0 6px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  h1 {
-    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-size: clamp(2rem, 4vw, 2.6rem);
-    margin: 0 0 8px;
-    text-wrap: balance;
-    letter-spacing: -0.01em;
-  }
-
-  .tagline {
-    margin: 0;
-    max-width: 60ch;
-    color: var(--text-muted);
-    font-size: 0.98rem;
-  }
-
-  .disclaimer {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    margin: 18px 0;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface-alt);
-    color: var(--text-muted);
-    font-size: 0.82rem;
-  }
-
-  .disclaimer svg { flex: none; margin-top: 2px; color: var(--text-faint); }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 22px 0;
-  }
-
-  .stat {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-  }
-
-  .stat .stat-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text-faint);
-    margin: 0 0 4px;
-  }
-
-  .stat .stat-value {
-    font-family: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
-    font-size: 1.35rem;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 18px;
-  }
-
-  .search-wrap { position: relative; flex: 1 1 220px; }
-
-  .search-wrap svg {
-    position: absolute;
-    left: 11px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-faint);
-    pointer-events: none;
-  }
-
-  input[type="search"], input[type="text"], input[type="number"], textarea, select {
-    font-family: inherit;
-    font-size: 0.92rem;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 9px 12px;
-    width: 100%;
-  }
-
-  .search-wrap input { padding-left: 34px; }
-
-  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 1px;
-  }
-
-  select { flex: 0 0 auto; width: auto; max-width: 180px; }
-
-  .btn {
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border-radius: 8px;
-    padding: 9px 16px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .btn:hover { border-color: var(--border-strong); }
-
-  .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--on-accent);
-  }
-
-  .btn-primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
-
-  .btn-ghost {
-    background: transparent;
-    border-color: transparent;
-    color: var(--text-muted);
-  }
-
-  .btn-ghost:hover { background: var(--surface-alt); color: var(--text); }
-
-  .icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-faint);
-    cursor: pointer;
-  }
-
-  .icon-btn:hover { background: var(--surface-alt); color: var(--text); }
-  .icon-btn.danger:hover { background: color-mix(in srgb, var(--negative) 14%, transparent); color: var(--negative); }
-
-  .form-panel {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-  }
-
-  .form-panel h2 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 600;
-    font-size: 1.2rem;
-    margin: 0 0 4px;
-  }
-
-  .form-panel .form-sub { margin: 0 0 16px; color: var(--text-muted); font-size: 0.85rem; }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field.span-2 { grid-column: 1 / -1; }
-
-  .field label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--text-muted);
-  }
-
-  .field .hint { font-size: 0.75rem; color: var(--text-faint); }
-
-  .field input.mono { font-family: 'IBM Plex Mono', monospace; }
-
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 18px;
-  }
-
-  .list-root { display: flex; flex-direction: column; gap: 10px; }
-
-  .row-head {
-    display: grid;
-    grid-template-columns: 2fr 1.3fr 0.9fr 0.8fr 1fr 64px;
-    gap: 12px;
-    padding: 0 16px;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 2fr 1.3fr 0.9fr 0.8fr 1fr 64px;
-    gap: 12px;
-    align-items: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-  }
-
-  .cell-coin .coin-name { font-weight: 600; }
-  .cell-coin .coin-symbol {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-
-  .contract-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.82rem;
-    background: var(--surface-alt);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 8px;
-    cursor: pointer;
-    color: var(--text-muted);
-    max-width: 100%;
-  }
-
-  .contract-chip:hover { color: var(--text); border-color: var(--border-strong); }
-  .contract-chip.empty { cursor: default; opacity: 0.6; }
-  .contract-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  .cell-price {
-    font-family: 'IBM Plex Mono', monospace;
-    font-variant-numeric: tabular-nums;
-    font-size: 0.92rem;
-  }
-
-  .target-pill {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 2px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 500;
-    font-size: 0.88rem;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--accent-soft);
-    color: var(--accent-strong);
-  }
-
-  .target-pill.tier-high {
-    background: var(--accent);
-    color: var(--on-accent);
-    font-weight: 600;
-  }
-
-  .buy-chip {
-    display: inline-block;
-    font-size: 0.82rem;
-    padding: 4px 10px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .cell-actions { display: flex; gap: 2px; justify-content: flex-end; }
-
-  .row-notes {
-    grid-column: 1 / -1;
-    margin-top: 8px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--border);
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    border: 1px dashed var(--border-strong);
-    border-radius: var(--radius);
-    color: var(--text-muted);
-  }
-
-  .empty-state svg { margin-bottom: 14px; color: var(--text-faint); }
-  .empty-state h3 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 600;
-    color: var(--text);
-    margin: 0 0 6px;
-    font-size: 1.25rem;
-  }
-  .empty-state p { margin: 0 0 18px; font-size: 0.9rem; }
-
-  .toast {
-    position: fixed;
-    bottom: 22px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--text);
-    color: var(--bg);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: var(--shadow);
-    z-index: 40;
-  }
-
-  .toast button {
-    background: none;
-    border: none;
-    color: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.85rem;
-    text-decoration: underline;
-    padding: 0;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .row, .form-panel { animation: rise 0.25s ease both; }
-    @keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-    .toast { animation: toast-in 0.2s ease both; }
-    @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
-  }
-
-  @media (max-width: 720px) {
-    .row-head { display: none; }
-    .row {
-      grid-template-columns: 1fr;
-      gap: 8px;
+    * {
+      box-sizing: border-box;
     }
-    .row > [data-label]::before {
-      content: attr(data-label);
-      display: block;
-      font-size: 0.68rem;
+
+    html {
+      color-scheme: light dark;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .topbar {
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+      font-optical-sizing: auto;
+      font-weight: 600;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      margin: 0 0 8px;
+      text-wrap: balance;
+      letter-spacing: -0.01em;
+    }
+
+    .tagline {
+      margin: 0;
+      max-width: 60ch;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+
+    .disclaimer {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin: 18px 0;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .disclaimer svg {
+      flex: none;
+      margin-top: 2px;
+      color: var(--text-faint);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 22px 0;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+
+    .stat .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-faint);
+      margin: 0 0 4px;
+    }
+
+    .stat .stat-value {
+      font-family: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+      font-size: 1.35rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1 1 220px;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+      pointer-events: none;
+    }
+
+    input[type="search"],
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      width: 100%;
+    }
+
+    .search-wrap input {
+      padding-left: 34px;
+    }
+
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    select {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 180px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 9px 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--border-strong);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--on-accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface-alt);
+      color: var(--text);
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-faint);
+      cursor: pointer;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-alt);
+      color: var(--text);
+    }
+
+    .icon-btn.danger:hover {
+      background: color-mix(in srgb, var(--negative) 14%, transparent);
+      color: var(--negative);
+    }
+
+    .form-panel {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .form-panel h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin: 0 0 4px;
+    }
+
+    .form-panel .form-sub {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field.span-2 {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .field .hint {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+    }
+
+    .lookup-status {
+      min-height: 1.1em;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .lookup-status.error {
+      color: var(--negative);
+    }
+
+    .field input.mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .list-root {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row-head {
+      display: grid;
+      grid-template-columns: 2fr 1.3fr 0.9fr 0.8fr 1fr 64px;
+      gap: 12px;
+      padding: 0 16px;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-faint);
-      margin-bottom: 3px;
     }
-    .row > .cell-coin::before { content: none; }
-    .cell-actions { justify-content: flex-start; margin-top: 4px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: 1fr 1fr; }
-  }
-</style>
+
+    .row {
+      display: grid;
+      grid-template-columns: 2fr 1.3fr 0.9fr 0.8fr 1fr 64px;
+      gap: 12px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+
+    .cell-coin .coin-name {
+      font-weight: 600;
+    }
+
+    .cell-coin .coin-symbol {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .contract-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      max-width: 100%;
+    }
+
+    .contract-chip:hover {
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .contract-chip.empty {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    .contract-chip span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cell-price {
+      font-family: 'IBM Plex Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.92rem;
+    }
+
+    .target-pill {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 2px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      font-size: 0.88rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+
+    .target-pill.tier-high {
+      background: var(--accent);
+      color: var(--on-accent);
+      font-weight: 600;
+    }
+
+    .buy-chip {
+      display: inline-block;
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cell-actions {
+      display: flex;
+      gap: 2px;
+      justify-content: flex-end;
+    }
+
+    .row-notes {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      margin-bottom: 14px;
+      color: var(--text-faint);
+    }
+
+    .empty-state h3 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 6px;
+      font-size: 1.25rem;
+    }
+
+    .empty-state p {
+      margin: 0 0 18px;
+      font-size: 0.9rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      z-index: 40;
+    }
+
+    .toast button {
+      background: none;
+      border: none;
+      color: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+
+      .row,
+      .form-panel {
+        animation: rise 0.25s ease both;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .toast {
+        animation: toast-in 0.2s ease both;
+      }
+
+      @keyframes toast-in {
+        from {
+          opacity: 0;
+          transform: translate(-50%, 6px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translate(-50%, 0);
+        }
+      }
+    }
+
+    @media (max-width: 720px) {
+      .row-head {
+        display: none;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .row>[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-faint);
+        margin-bottom: 3px;
+      }
+
+      .row>.cell-coin::before {
+        content: none;
+      }
+
+      .cell-actions {
+        justify-content: flex-start;
+        margin-top: 4px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
 
 </head>
+
 <body>
-<div class="app" id="app-root">
-  <header class="topbar">
-    <p class="eyebrow">Personal research</p>
-    <h1>Coin Watchlist</h1>
-    <p class="tagline">Every coin you're weighing up — contract, entry price, and how big a swing you think it has.</p>
-  </header>
+  <div class="app" id="app-root">
+    <header class="topbar">
+      <p class="eyebrow">Personal research</p>
+      <h1>Coin Watchlist</h1>
+      <p class="tagline">Every coin you're weighing up — contract, entry price, and how big a swing you think it has.
+      </p>
+    </header>
 
-  <div class="disclaimer">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1L15 14H1L8 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6V9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="11.7" r="0.8" fill="currentColor"/></svg>
-    <span>Manual tracker — you enter every price, nothing here is pulled live. Not financial advice; double-check any contract address yourself before you buy.</span>
-  </div>
-
-  <div class="stats" id="stats-root"></div>
-
-  <div class="controls">
-    <div class="search-wrap">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.3"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      <input type="search" id="search-input" placeholder="Filter by name, symbol, or exchange" aria-label="Filter coins">
+    <div class="disclaimer">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1L15 14H1L8 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+        <path d="M8 6V9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+        <circle cx="8" cy="11.7" r="0.8" fill="currentColor" />
+      </svg>
+      <span>Coin details can be filled from a CoinMarketCap link; prices are a snapshot, not live tracking. Not
+        financial
+        advice; double-check any contract address yourself before you buy.</span>
     </div>
-    <select id="sort-select" aria-label="Sort coins">
-      <option value="target-desc">Highest target ×</option>
-      <option value="target-asc">Lowest target ×</option>
-      <option value="name-asc">Name A–Z</option>
-      <option value="recent">Recently added</option>
-    </select>
-    <button class="btn btn-primary" id="add-btn" type="button">+ Add coin</button>
+
+    <div class="stats" id="stats-root"></div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.3" />
+          <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+        </svg>
+        <input type="search" id="search-input" placeholder="Filter by name, symbol, or exchange"
+          aria-label="Filter coins">
+      </div>
+      <select id="sort-select" aria-label="Sort coins">
+        <option value="target-desc">Highest target ×</option>
+        <option value="target-asc">Lowest target ×</option>
+        <option value="name-asc">Name A–Z</option>
+        <option value="recent">Recently added</option>
+      </select>
+      <button class="btn btn-primary" id="add-btn" type="button">+ Add coin</button>
+    </div>
+
+    <section class="form-panel" id="form-panel" hidden>
+      <h2 id="form-title">Add a coin</h2>
+      <p class="form-sub">Paste a CoinMarketCap link to fill in the coin details, then add your price, target, and
+        exchange.</p>
+      <form id="coin-form" novalidate>
+        <input type="hidden" id="field-id">
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="field-cmc-url">CoinMarketCap link</label>
+            <input type="url" id="field-cmc-url" placeholder="https://coinmarketcap.com/currencies/bitcoin/"
+              autocomplete="url">
+            <span class="lookup-status" id="lookup-status" aria-live="polite">We'll fill the name, ticker, price, and
+              contract when available.</span>
+          </div>
+          <div class="field">
+            <label for="field-name">Coin name *</label>
+            <input type="text" id="field-name" placeholder="e.g. Fetch.ai" required>
+          </div>
+          <div class="field">
+            <label for="field-symbol">Symbol / ticker *</label>
+            <input type="text" id="field-symbol" placeholder="e.g. FET" required>
+          </div>
+          <div class="field span-2">
+            <label for="field-contract">Contract address</label>
+            <input type="text" id="field-contract" class="mono"
+              placeholder="0x… (leave blank for native coins like BTC or ETH)">
+          </div>
+          <div class="field">
+            <label for="field-price">Price *</label>
+            <input type="text" id="field-price" placeholder="e.g. 0.42" required>
+            <span class="hint">Whatever you're seeing right now — you keep this current</span>
+          </div>
+          <div class="field">
+            <label for="field-target">Target, in × *</label>
+            <input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required>
+            <span class="hint">How many times over you think this could go</span>
+          </div>
+          <div class="field span-2">
+            <label for="field-buy">Where to buy *</label>
+            <input type="text" id="field-buy" placeholder="e.g. Uniswap, Coinbase, Binance" required>
+          </div>
+          <div class="field span-2">
+            <label for="field-notes">Notes</label>
+            <textarea id="field-notes" rows="2"
+              placeholder="Why you're watching it, red flags, anything worth remembering"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-btn">Save coin</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="row-head" id="row-head" hidden>
+      <span>Coin</span><span>Contract</span><span>Price</span><span>Target</span><span>Where to buy</span><span></span>
+    </div>
+
+    <section class="list-root" id="list-root"></section>
+
+    <script type="application/json" id="state-data">[]</script>
   </div>
 
-  <section class="form-panel" id="form-panel" hidden>
-    <h2 id="form-title">Add a coin</h2>
-    <p class="form-sub">Fields marked with an asterisk are required.</p>
-    <form id="coin-form" novalidate>
-      <input type="hidden" id="field-id">
-      <div class="form-grid">
-        <div class="field">
-          <label for="field-name">Coin name *</label>
-          <input type="text" id="field-name" placeholder="e.g. Fetch.ai" required>
-        </div>
-        <div class="field">
-          <label for="field-symbol">Symbol / ticker *</label>
-          <input type="text" id="field-symbol" placeholder="e.g. FET" required>
-        </div>
-        <div class="field span-2">
-          <label for="field-contract">Contract address</label>
-          <input type="text" id="field-contract" class="mono" placeholder="0x… (leave blank for native coins like BTC or ETH)">
-        </div>
-        <div class="field">
-          <label for="field-price">Price *</label>
-          <input type="text" id="field-price" placeholder="e.g. 0.42" required>
-          <span class="hint">Whatever you're seeing right now — you keep this current</span>
-        </div>
-        <div class="field">
-          <label for="field-target">Target, in × *</label>
-          <input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required>
-          <span class="hint">How many times over you think this could go</span>
-        </div>
-        <div class="field span-2">
-          <label for="field-buy">Where to buy *</label>
-          <input type="text" id="field-buy" placeholder="e.g. Uniswap, Coinbase, Binance" required>
-        </div>
-        <div class="field span-2">
-          <label for="field-notes">Notes</label>
-          <textarea id="field-notes" rows="2" placeholder="Why you're watching it, red flags, anything worth remembering"></textarea>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
-        <button type="submit" class="btn btn-primary" id="save-btn">Save coin</button>
-      </div>
-    </form>
-  </section>
 
-  <div class="row-head" id="row-head" hidden>
-    <span>Coin</span><span>Contract</span><span>Price</span><span>Target</span><span>Where to buy</span><span></span>
-  </div>
+  <script id="app-script" type="text/javascript">
+    (function () {
+      "use strict";
 
-  <section class="list-root" id="list-root"></section>
+      var STYLE_SRC = document.getElementById("page-style").textContent;
+      var SCRIPT_SRC = document.getElementById("app-script").textContent;
 
-  <script type="application/json" id="state-data">[]</script>
-</div>
+      var ICON_COPY = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="5.5" width="8.5" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 5V3.5C10.5 2.67 9.83 2 9 2H3.5C2.67 2 2 2.67 2 3.5V9C2 9.83 2.67 10.5 3.5 10.5H5" stroke="currentColor" stroke-width="1.2"/></svg>';
+      var ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.3 2.3a1.5 1.5 0 0 1 2.1 2.1L5 12.8l-2.9.6.6-2.9 8.6-8.2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+      var ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5 4.6 13a1 1 0 0 0 1 .95h4.8a1 1 0 0 0 1-.95l.6-8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var ICON_EMPTY = '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1.4"/><path d="M24 17v14M19.5 20.5c0-2 2-3 4.5-3s4.5 1 4.5 2.7c0 3.6-9 1.8-9 5.4 0 1.7 2 2.9 4.5 2.9s4.5-1.1 4.5-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
 
-
-<script id="app-script" type="text/javascript">
-(function () {
-  "use strict";
-
-  var STYLE_SRC = document.getElementById("page-style").textContent;
-  var SCRIPT_SRC = document.getElementById("app-script").textContent;
-
-  var ICON_COPY = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="5.5" width="8.5" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M10.5 5V3.5C10.5 2.67 9.83 2 9 2H3.5C2.67 2 2 2.67 2 3.5V9C2 9.83 2.67 10.5 3.5 10.5H5" stroke="currentColor" stroke-width="1.2"/></svg>';
-  var ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.3 2.3a1.5 1.5 0 0 1 2.1 2.1L5 12.8l-2.9.6.6-2.9 8.6-8.2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
-  var ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5 4.6 13a1 1 0 0 0 1 .95h4.8a1 1 0 0 0 1-.95l.6-8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var ICON_EMPTY = '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1.4"/><path d="M24 17v14M19.5 20.5c0-2 2-3 4.5-3s4.5 1 4.5 2.7c0 3.6-9 1.8-9 5.4 0 1.7 2 2.9 4.5 2.9s4.5-1.1 4.5-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
-
-  // Standalone build: this file has no shared save destination (no
-  // window.claude host), so the browser's localStorage is the persistence
-  // layer. The embedded state-data block only matters if you hand-edit it
-  // to ship a starter list — once a viewer has saved anything locally,
-  // their own saved copy takes over.
-  var state = [];
-  try {
-    state = JSON.parse(document.getElementById("state-data").textContent) || [];
-  } catch (e) { state = []; }
-  if (state.length === 0) {
-    try {
-      var backup = localStorage.getItem("coin-watchlist-backup");
-      if (backup) {
-        var parsedBackup = JSON.parse(backup);
-        if (Array.isArray(parsedBackup) && parsedBackup.length) state = parsedBackup;
+      // Standalone build: this file has no shared save destination (no
+      // window.claude host), so the browser's localStorage is the persistence
+      // layer. The embedded state-data block only matters if you hand-edit it
+      // to ship a starter list — once a viewer has saved anything locally,
+      // their own saved copy takes over.
+      var state = [];
+      try {
+        state = JSON.parse(document.getElementById("state-data").textContent) || [];
+      } catch (e) { state = []; }
+      if (state.length === 0) {
+        try {
+          var backup = localStorage.getItem("coin-watchlist-backup");
+          if (backup) {
+            var parsedBackup = JSON.parse(backup);
+            if (Array.isArray(parsedBackup) && parsedBackup.length) state = parsedBackup;
+          }
+        } catch (e) { }
       }
-    } catch (e) {}
-  }
 
-  var filterText = "";
-  var sortKey = "target-desc";
-  var editingId = null;
-  var pendingUndo = null;
+      var filterText = "";
+      var sortKey = "target-desc";
+      var editingId = null;
+      var pendingUndo = null;
 
-  var listRoot = document.getElementById("list-root");
-  var rowHead = document.getElementById("row-head");
-  var statsRoot = document.getElementById("stats-root");
-  var formPanel = document.getElementById("form-panel");
-  var formTitle = document.getElementById("form-title");
-  var coinForm = document.getElementById("coin-form");
+      var listRoot = document.getElementById("list-root");
+      var rowHead = document.getElementById("row-head");
+      var statsRoot = document.getElementById("stats-root");
+      var formPanel = document.getElementById("form-panel");
+      var formTitle = document.getElementById("form-title");
+      var coinForm = document.getElementById("coin-form");
+      var lookupTimer = null;
+      var lookupRequest = 0;
 
-  function escapeHtml(str) {
-    return String(str == null ? "" : str).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
+      function escapeHtml(str) {
+        return String(str == null ? "" : str).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
 
-  function formatPrice(raw) {
-    var v = String(raw == null ? "" : raw).trim();
-    if (v === "") return "—";
-    if (/^\$/.test(v)) return v;
-    if (/^-?[0-9.,]+$/.test(v)) return "$" + v;
-    return v;
-  }
+      function formatPrice(raw) {
+        var v = String(raw == null ? "" : raw).trim();
+        if (v === "") return "—";
+        if (/^\$/.test(v)) return v;
+        if (/^-?[0-9.,]+$/.test(v)) return "$" + v;
+        return v;
+      }
 
-  function truncateContract(addr) {
-    if (!addr) return "";
-    if (addr.length <= 14) return addr;
-    return addr.slice(0, 6) + "…" + addr.slice(-4);
-  }
+      function truncateContract(addr) {
+        if (!addr) return "";
+        if (addr.length <= 14) return addr;
+        return addr.slice(0, 6) + "…" + addr.slice(-4);
+      }
 
-  function uid() {
-    return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  }
+      function uid() {
+        return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      }
 
-  function computeStats(list) {
-    var count = list.length;
-    var targets = list.map(function (c) { return Number(c.targetX) || 0; });
-    var highest = targets.length ? Math.max.apply(null, targets) : 0;
-    var avg = targets.length ? (targets.reduce(function (a, b) { return a + b; }, 0) / targets.length) : 0;
-    return { count: count, highest: highest, avg: avg };
-  }
+      function computeStats(list) {
+        var count = list.length;
+        var targets = list.map(function (c) { return Number(c.targetX) || 0; });
+        var highest = targets.length ? Math.max.apply(null, targets) : 0;
+        var avg = targets.length ? (targets.reduce(function (a, b) { return a + b; }, 0) / targets.length) : 0;
+        return { count: count, highest: highest, avg: avg };
+      }
 
-  function renderStatsHTML(list) {
-    var s = computeStats(list);
-    return (
-      '<div class="stat"><p class="stat-label">Coins tracked</p><p class="stat-value">' + s.count + '</p></div>' +
-      '<div class="stat"><p class="stat-label">Highest target</p><p class="stat-value">' + (s.count ? s.highest + "×" : "—") + '</p></div>' +
-      '<div class="stat"><p class="stat-label">Average target</p><p class="stat-value">' + (s.count ? s.avg.toFixed(1) + "×" : "—") + '</p></div>'
-    );
-  }
+      function renderStatsHTML(list) {
+        var s = computeStats(list);
+        return (
+          '<div class="stat"><p class="stat-label">Coins tracked</p><p class="stat-value">' + s.count + '</p></div>' +
+          '<div class="stat"><p class="stat-label">Highest target</p><p class="stat-value">' + (s.count ? s.highest + "×" : "—") + '</p></div>' +
+          '<div class="stat"><p class="stat-label">Average target</p><p class="stat-value">' + (s.count ? s.avg.toFixed(1) + "×" : "—") + '</p></div>'
+        );
+      }
 
-  function getVisibleList() {
-    var q = filterText.trim().toLowerCase();
-    var list = state.filter(function (c) {
-      if (!q) return true;
-      return (c.name || "").toLowerCase().indexOf(q) > -1 ||
-        (c.symbol || "").toLowerCase().indexOf(q) > -1 ||
-        (c.buyWhere || "").toLowerCase().indexOf(q) > -1;
-    });
-    list = list.slice();
-    if (sortKey === "target-desc") list.sort(function (a, b) { return (Number(b.targetX) || 0) - (Number(a.targetX) || 0); });
-    else if (sortKey === "target-asc") list.sort(function (a, b) { return (Number(a.targetX) || 0) - (Number(b.targetX) || 0); });
-    else if (sortKey === "name-asc") list.sort(function (a, b) { return (a.name || "").localeCompare(b.name || ""); });
-    else if (sortKey === "recent") list.sort(function (a, b) { return (b.addedAt || 0) - (a.addedAt || 0); });
-    return list;
-  }
+      function getVisibleList() {
+        var q = filterText.trim().toLowerCase();
+        var list = state.filter(function (c) {
+          if (!q) return true;
+          return (c.name || "").toLowerCase().indexOf(q) > -1 ||
+            (c.symbol || "").toLowerCase().indexOf(q) > -1 ||
+            (c.buyWhere || "").toLowerCase().indexOf(q) > -1;
+        });
+        list = list.slice();
+        if (sortKey === "target-desc") list.sort(function (a, b) { return (Number(b.targetX) || 0) - (Number(a.targetX) || 0); });
+        else if (sortKey === "target-asc") list.sort(function (a, b) { return (Number(a.targetX) || 0) - (Number(b.targetX) || 0); });
+        else if (sortKey === "name-asc") list.sort(function (a, b) { return (a.name || "").localeCompare(b.name || ""); });
+        else if (sortKey === "recent") list.sort(function (a, b) { return (b.addedAt || 0) - (a.addedAt || 0); });
+        return list;
+      }
 
-  function renderRow(coin) {
-    var target = Number(coin.targetX) || 0;
-    var tierClass = target >= 20 ? " tier-high" : "";
-    var contractHtml = coin.contract
-      ? '<button type="button" class="contract-chip" data-action="copy" data-id="' + coin.id + '" title="' + escapeHtml(coin.contract) + ' — click to copy">' + ICON_COPY + '<span>' + escapeHtml(truncateContract(coin.contract)) + '</span></button>'
-      : '<span class="contract-chip empty">native / none</span>';
-    var notesHtml = coin.notes ? '<div class="row-notes">' + escapeHtml(coin.notes) + '</div>' : "";
+      function renderRow(coin) {
+        var target = Number(coin.targetX) || 0;
+        var tierClass = target >= 20 ? " tier-high" : "";
+        var contractHtml = coin.contract
+          ? '<button type="button" class="contract-chip" data-action="copy" data-id="' + coin.id + '" title="' + escapeHtml(coin.contract) + ' — click to copy">' + ICON_COPY + '<span>' + escapeHtml(truncateContract(coin.contract)) + '</span></button>'
+          : '<span class="contract-chip empty">native / none</span>';
+        var notesHtml = coin.notes ? '<div class="row-notes">' + escapeHtml(coin.notes) + '</div>' : "";
 
-    return (
-      '<article class="row" data-id="' + coin.id + '">' +
-        '<div class="cell-coin" data-label="Coin"><div class="coin-name">' + escapeHtml(coin.name) + '</div><div class="coin-symbol">' + escapeHtml(coin.symbol) + '</div></div>' +
-        '<div data-label="Contract">' + contractHtml + '</div>' +
-        '<div class="cell-price" data-label="Price">' + escapeHtml(formatPrice(coin.price)) + '</div>' +
-        '<div data-label="Target"><span class="target-pill' + tierClass + '">' + target + '×</span></div>' +
-        '<div data-label="Where to buy"><span class="buy-chip" title="' + escapeHtml(coin.buyWhere || "") + '">' + escapeHtml(coin.buyWhere || "—") + '</span></div>' +
-        '<div class="cell-actions">' +
+        return (
+          '<article class="row" data-id="' + coin.id + '">' +
+          '<div class="cell-coin" data-label="Coin"><div class="coin-name">' + escapeHtml(coin.name) + '</div><div class="coin-symbol">' + escapeHtml(coin.symbol) + '</div></div>' +
+          '<div data-label="Contract">' + contractHtml + '</div>' +
+          '<div class="cell-price" data-label="Price">' + escapeHtml(formatPrice(coin.price)) + '</div>' +
+          '<div data-label="Target"><span class="target-pill' + tierClass + '">' + target + '×</span></div>' +
+          '<div data-label="Where to buy"><span class="buy-chip" title="' + escapeHtml(coin.buyWhere || "") + '">' + escapeHtml(coin.buyWhere || "—") + '</span></div>' +
+          '<div class="cell-actions">' +
           '<button type="button" class="icon-btn" data-action="edit" data-id="' + coin.id + '" aria-label="Edit ' + escapeHtml(coin.name) + '">' + ICON_EDIT + '</button>' +
           '<button type="button" class="icon-btn danger" data-action="delete" data-id="' + coin.id + '" aria-label="Delete ' + escapeHtml(coin.name) + '">' + ICON_TRASH + '</button>' +
-        '</div>' +
-        notesHtml +
-      '</article>'
-    );
-  }
-
-  function renderListHTML(list, isCollectionEmpty, activeFilterText) {
-    if (isCollectionEmpty) {
-      return (
-        '<div class="empty-state">' + ICON_EMPTY +
-        '<h3>Your watchlist is empty</h3>' +
-        '<p>Add the first coin you\'re researching — name, contract, price, and how big a swing you\'re betting on.</p>' +
-        '<button type="button" class="btn btn-primary" id="empty-add-btn">+ Add your first coin</button>' +
-        '</div>'
-      );
-    }
-    if (list.length === 0) {
-      return '<div class="empty-state"><h3>No matches</h3><p>Nothing matches “' + escapeHtml(activeFilterText) + '”. Try a different search.</p></div>';
-    }
-    return list.map(renderRow).join("");
-  }
-
-  function render() {
-    statsRoot.innerHTML = renderStatsHTML(state);
-    var list = getVisibleList();
-    var isCollectionEmpty = state.length === 0;
-    rowHead.hidden = isCollectionEmpty || list.length === 0;
-    listRoot.innerHTML = renderListHTML(list, isCollectionEmpty, filterText);
-    if (isCollectionEmpty) {
-      var eb = document.getElementById("empty-add-btn");
-      if (eb) eb.addEventListener("click", function () { openForm(null); });
-    }
-  }
-
-  function openForm(coin) {
-    editingId = coin ? coin.id : null;
-    formTitle.textContent = coin ? "Edit coin" : "Add a coin";
-    document.getElementById("field-id").value = coin ? coin.id : "";
-    document.getElementById("field-name").value = coin ? coin.name : "";
-    document.getElementById("field-symbol").value = coin ? coin.symbol : "";
-    document.getElementById("field-contract").value = coin ? coin.contract : "";
-    document.getElementById("field-price").value = coin ? coin.price : "";
-    document.getElementById("field-target").value = coin ? coin.targetX : "";
-    document.getElementById("field-buy").value = coin ? coin.buyWhere : "";
-    document.getElementById("field-notes").value = coin ? coin.notes : "";
-    formPanel.hidden = false;
-    formPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    document.getElementById("field-name").focus();
-  }
-
-  function closeForm() {
-    formPanel.hidden = true;
-    coinForm.reset();
-    editingId = null;
-  }
-
-  function handleSubmit(ev) {
-    ev.preventDefault();
-    var name = document.getElementById("field-name").value.trim();
-    var symbol = document.getElementById("field-symbol").value.trim().toUpperCase();
-    var contract = document.getElementById("field-contract").value.trim();
-    var price = document.getElementById("field-price").value.trim();
-    var targetX = document.getElementById("field-target").value;
-    var buyWhere = document.getElementById("field-buy").value.trim();
-    var notes = document.getElementById("field-notes").value.trim();
-
-    if (!name || !symbol || !price || !targetX || !buyWhere) return;
-
-    if (editingId) {
-      var idx = state.findIndex(function (c) { return c.id === editingId; });
-      if (idx > -1) {
-        state[idx] = Object.assign({}, state[idx], { name: name, symbol: symbol, contract: contract, price: price, targetX: Number(targetX), buyWhere: buyWhere, notes: notes });
+          '</div>' +
+          notesHtml +
+          '</article>'
+        );
       }
-    } else {
-      state.push({ id: uid(), name: name, symbol: symbol, contract: contract, price: price, targetX: Number(targetX), buyWhere: buyWhere, notes: notes, addedAt: Date.now() });
-    }
-    closeForm();
-    render();
-    persist();
-  }
 
-  function showToast(message, undoFn) {
-    var existing = document.querySelector(".toast");
-    if (existing) existing.remove();
-    var toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerHTML = '<span>' + escapeHtml(message) + '</span>';
-    if (undoFn) {
-      var undoBtn = document.createElement("button");
-      undoBtn.type = "button";
-      undoBtn.textContent = "Undo";
-      undoBtn.addEventListener("click", function () { undoFn(); toast.remove(); });
-      toast.appendChild(undoBtn);
-    }
-    document.body.appendChild(toast);
-    setTimeout(function () { if (toast.parentNode) toast.remove(); }, 6000);
-  }
+      function renderListHTML(list, isCollectionEmpty, activeFilterText) {
+        if (isCollectionEmpty) {
+          return (
+            '<div class="empty-state">' + ICON_EMPTY +
+            '<h3>Your watchlist is empty</h3>' +
+            '<p>Add the first coin you\'re researching — name, contract, price, and how big a swing you\'re betting on.</p>' +
+            '<button type="button" class="btn btn-primary" id="empty-add-btn">+ Add your first coin</button>' +
+            '</div>'
+          );
+        }
+        if (list.length === 0) {
+          return '<div class="empty-state"><h3>No matches</h3><p>Nothing matches “' + escapeHtml(activeFilterText) + '”. Try a different search.</p></div>';
+        }
+        return list.map(renderRow).join("");
+      }
 
-  function deleteCoin(id) {
-    var idx = state.findIndex(function (c) { return c.id === id; });
-    if (idx === -1) return;
-    var removed = state[idx];
-    var removedIdx = idx;
-    state.splice(idx, 1);
-    render();
-    persist();
-    showToast("Removed " + removed.name, function () {
-      state.splice(removedIdx, 0, removed);
-      render();
-      persist();
-    });
-  }
+      function render() {
+        statsRoot.innerHTML = renderStatsHTML(state);
+        var list = getVisibleList();
+        var isCollectionEmpty = state.length === 0;
+        rowHead.hidden = isCollectionEmpty || list.length === 0;
+        listRoot.innerHTML = renderListHTML(list, isCollectionEmpty, filterText);
+        if (isCollectionEmpty) {
+          var eb = document.getElementById("empty-add-btn");
+          if (eb) eb.addEventListener("click", function () { openForm(null); });
+        }
+      }
 
-  function copyContract(id) {
-    var coin = state.find(function (c) { return c.id === id; });
-    if (!coin || !coin.contract) return;
-    var text = coin.contract;
-    var done = function () { showToast("Copied contract address"); };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done, done);
-    } else {
-      done();
-    }
-  }
+      function openForm(coin) {
+        editingId = coin ? coin.id : null;
+        formTitle.textContent = coin ? "Edit coin" : "Add a coin";
+        document.getElementById("field-id").value = coin ? coin.id : "";
+        document.getElementById("field-cmc-url").value = coin ? (coin.cmcUrl || "") : "";
+        document.getElementById("field-name").value = coin ? coin.name : "";
+        document.getElementById("field-symbol").value = coin ? coin.symbol : "";
+        document.getElementById("field-contract").value = coin ? coin.contract : "";
+        document.getElementById("field-price").value = coin ? coin.price : "";
+        document.getElementById("field-target").value = coin ? coin.targetX : "";
+        document.getElementById("field-buy").value = coin ? coin.buyWhere : "";
+        document.getElementById("field-notes").value = coin ? coin.notes : "";
+        formPanel.hidden = false;
+        formPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        document.getElementById("field-name").focus();
+      }
 
-  // Builds the body markup from the canonical `state` array, never from the
-  // live DOM (which can carry incidental viewer-session state like an open
-  // form, a search string, or unsaved input) — this is what a fresh viewer
-  // should see: form closed, unfiltered, sorted by highest target.
-  function renderBodyShell(currentState) {
-    var atRestList = currentState.slice().sort(function (a, b) { return (Number(b.targetX) || 0) - (Number(a.targetX) || 0); });
-    var isCollectionEmpty = currentState.length === 0;
-    var listHtml = renderListHTML(atRestList, isCollectionEmpty, "");
-    var rowHeadAttr = isCollectionEmpty ? ' hidden' : '';
+      function closeForm() {
+        formPanel.hidden = true;
+        coinForm.reset();
+        editingId = null;
+        setLookupStatus("");
+      }
 
-    return (
-      '<div class="app" id="app-root">' +
-        '<header class="topbar">' +
+      function setLookupStatus(message, isError) {
+        var status = document.getElementById("lookup-status");
+        if (!status) return;
+        status.textContent = message || "We'll fill the name, ticker, price, and contract when available.";
+        status.className = "lookup-status" + (isError ? " error" : "");
+      }
+
+      function getCoinMarketCapSlug(rawUrl) {
+        try {
+          var parsed = new URL(rawUrl.trim());
+          if (parsed.hostname.toLowerCase() !== "coinmarketcap.com" && parsed.hostname.toLowerCase() !== "www.coinmarketcap.com") return "";
+          var parts = parsed.pathname.split("/").filter(Boolean);
+          if (parts.length < 2 || parts[0].toLowerCase() !== "currencies") return "";
+          return parts[1].toLowerCase();
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function titleFromSlug(slug) {
+        return slug.split("-").map(function (part) {
+          return part ? part.charAt(0).toUpperCase() + part.slice(1) : part;
+        }).join(" ");
+      }
+
+      function fillFromCoinGecko(slug, requestId) {
+        var endpoint = "https://api.coingecko.com/api/v3/search?query=" + encodeURIComponent(slug);
+        return fetch(endpoint).then(function (response) {
+          if (!response.ok) throw new Error("lookup failed");
+          return response.json();
+        }).then(function (result) {
+          var coins = result.coins || [];
+          var match = coins.find(function (coin) { return (coin.id || "").toLowerCase() === slug; }) || coins[0];
+          if (!match) throw new Error("coin not found");
+          if (requestId !== lookupRequest) return;
+          document.getElementById("field-name").value = match.name || titleFromSlug(slug);
+          document.getElementById("field-symbol").value = (match.symbol || "").toUpperCase();
+          setLookupStatus("Coin details found. Check them before saving.");
+          return fetch("https://api.coingecko.com/api/v3/coins/" + encodeURIComponent(match.id) + "?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false");
+        }).then(function (response) {
+          if (!response || requestId !== lookupRequest) return;
+          if (!response.ok) return;
+          return response.json();
+        }).then(function (coin) {
+          if (!coin || requestId !== lookupRequest) return;
+          var price = coin.market_data && coin.market_data.current_price && coin.market_data.current_price.usd;
+          if (price != null) document.getElementById("field-price").value = String(price);
+          var platforms = coin.platforms || {};
+          var contract = Object.keys(platforms).map(function (network) { return platforms[network]; }).find(function (address) { return address; });
+          if (contract) document.getElementById("field-contract").value = contract;
+        });
+      }
+
+      function lookupCoinMarketCap(rawUrl) {
+        var slug = getCoinMarketCapSlug(rawUrl);
+        var requestId = ++lookupRequest;
+        if (!rawUrl.trim()) {
+          setLookupStatus("");
+          return;
+        }
+        if (!slug) {
+          setLookupStatus("Paste a valid CoinMarketCap currency link.", true);
+          return;
+        }
+        setLookupStatus("Looking up " + titleFromSlug(slug) + "...");
+        fillFromCoinGecko(slug, requestId).catch(function () {
+          if (requestId !== lookupRequest) return;
+          document.getElementById("field-name").value = titleFromSlug(slug);
+          setLookupStatus("Could not fetch details. The name was filled from the link; check the remaining fields manually.", true);
+        });
+      }
+
+      function handleSubmit(ev) {
+        ev.preventDefault();
+        var name = document.getElementById("field-name").value.trim();
+        var symbol = document.getElementById("field-symbol").value.trim().toUpperCase();
+        var cmcUrl = document.getElementById("field-cmc-url").value.trim();
+        var contract = document.getElementById("field-contract").value.trim();
+        var price = document.getElementById("field-price").value.trim();
+        var targetX = document.getElementById("field-target").value;
+        var buyWhere = document.getElementById("field-buy").value.trim();
+        var notes = document.getElementById("field-notes").value.trim();
+
+        if (!name || !symbol || !price || !targetX || !buyWhere) return;
+
+        if (editingId) {
+          var idx = state.findIndex(function (c) { return c.id === editingId; });
+          if (idx > -1) {
+            state[idx] = Object.assign({}, state[idx], { name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price, targetX: Number(targetX), buyWhere: buyWhere, notes: notes });
+          }
+        } else {
+          state.push({ id: uid(), name: name, symbol: symbol, cmcUrl: cmcUrl, contract: contract, price: price, targetX: Number(targetX), buyWhere: buyWhere, notes: notes, addedAt: Date.now() });
+        }
+        closeForm();
+        render();
+        persist();
+      }
+
+      function showToast(message, undoFn) {
+        var existing = document.querySelector(".toast");
+        if (existing) existing.remove();
+        var toast = document.createElement("div");
+        toast.className = "toast";
+        toast.innerHTML = '<span>' + escapeHtml(message) + '</span>';
+        if (undoFn) {
+          var undoBtn = document.createElement("button");
+          undoBtn.type = "button";
+          undoBtn.textContent = "Undo";
+          undoBtn.addEventListener("click", function () { undoFn(); toast.remove(); });
+          toast.appendChild(undoBtn);
+        }
+        document.body.appendChild(toast);
+        setTimeout(function () { if (toast.parentNode) toast.remove(); }, 6000);
+      }
+
+      function deleteCoin(id) {
+        var idx = state.findIndex(function (c) { return c.id === id; });
+        if (idx === -1) return;
+        var removed = state[idx];
+        var removedIdx = idx;
+        state.splice(idx, 1);
+        render();
+        persist();
+        showToast("Removed " + removed.name, function () {
+          state.splice(removedIdx, 0, removed);
+          render();
+          persist();
+        });
+      }
+
+      function copyContract(id) {
+        var coin = state.find(function (c) { return c.id === id; });
+        if (!coin || !coin.contract) return;
+        var text = coin.contract;
+        var done = function () { showToast("Copied contract address"); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, done);
+        } else {
+          done();
+        }
+      }
+
+      // Builds the body markup from the canonical `state` array, never from the
+      // live DOM (which can carry incidental viewer-session state like an open
+      // form, a search string, or unsaved input) — this is what a fresh viewer
+      // should see: form closed, unfiltered, sorted by highest target.
+      function renderBodyShell(currentState) {
+        var atRestList = currentState.slice().sort(function (a, b) { return (Number(b.targetX) || 0) - (Number(a.targetX) || 0); });
+        var isCollectionEmpty = currentState.length === 0;
+        var listHtml = renderListHTML(atRestList, isCollectionEmpty, "");
+        var rowHeadAttr = isCollectionEmpty ? ' hidden' : '';
+
+        return (
+          '<div class="app" id="app-root">' +
+          '<header class="topbar">' +
           '<p class="eyebrow">Personal research</p>' +
           '<h1>Coin Watchlist</h1>' +
           '<p class="tagline">Every coin you\'re weighing up — contract, entry price, and how big a swing you think it has.</p>' +
-        '</header>' +
-        '<div class="disclaimer">' +
+          '</header>' +
+          '<div class="disclaimer">' +
           '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1L15 14H1L8 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6V9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="11.7" r="0.8" fill="currentColor"/></svg>' +
-          '<span>Manual tracker — you enter every price, nothing here is pulled live. Not financial advice; double-check any contract address yourself before you buy.</span>' +
-        '</div>' +
-        '<div class="stats" id="stats-root">' + renderStatsHTML(currentState) + '</div>' +
-        '<div class="controls">' +
+          '<span>Coin details can be filled from a CoinMarketCap link; prices are a snapshot, not live tracking. Not financial advice; double-check any contract address yourself before you buy.</span>' +
+          '</div>' +
+          '<div class="stats" id="stats-root">' + renderStatsHTML(currentState) + '</div>' +
+          '<div class="controls">' +
           '<div class="search-wrap"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.3"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><input type="search" id="search-input" placeholder="Filter by name, symbol, or exchange" aria-label="Filter coins"></div>' +
           '<select id="sort-select" aria-label="Sort coins">' +
-            '<option value="target-desc">Highest target ×</option>' +
-            '<option value="target-asc">Lowest target ×</option>' +
-            '<option value="name-asc">Name A–Z</option>' +
-            '<option value="recent">Recently added</option>' +
+          '<option value="target-desc">Highest target ×</option>' +
+          '<option value="target-asc">Lowest target ×</option>' +
+          '<option value="name-asc">Name A–Z</option>' +
+          '<option value="recent">Recently added</option>' +
           '</select>' +
           '<button class="btn btn-primary" id="add-btn" type="button">+ Add coin</button>' +
-        '</div>' +
-        '<section class="form-panel" id="form-panel" hidden>' +
+          '</div>' +
+          '<section class="form-panel" id="form-panel" hidden>' +
           '<h2 id="form-title">Add a coin</h2>' +
-          '<p class="form-sub">Fields marked with an asterisk are required.</p>' +
+          '<p class="form-sub">Paste a CoinMarketCap link to fill in the coin details, then add your price, target, and exchange.</p>' +
           '<form id="coin-form" novalidate>' +
-            '<input type="hidden" id="field-id">' +
-            '<div class="form-grid">' +
-              '<div class="field"><label for="field-name">Coin name *</label><input type="text" id="field-name" placeholder="e.g. Fetch.ai" required></div>' +
-              '<div class="field"><label for="field-symbol">Symbol / ticker *</label><input type="text" id="field-symbol" placeholder="e.g. FET" required></div>' +
-              '<div class="field span-2"><label for="field-contract">Contract address</label><input type="text" id="field-contract" class="mono" placeholder="0x… (leave blank for native coins like BTC or ETH)"></div>' +
-              '<div class="field"><label for="field-price">Price *</label><input type="text" id="field-price" placeholder="e.g. 0.42" required><span class="hint">Whatever you\'re seeing right now — you keep this current</span></div>' +
-              '<div class="field"><label for="field-target">Target, in × *</label><input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required><span class="hint">How many times over you think this could go</span></div>' +
-              '<div class="field span-2"><label for="field-buy">Where to buy *</label><input type="text" id="field-buy" placeholder="e.g. Uniswap, Coinbase, Binance" required></div>' +
-              '<div class="field span-2"><label for="field-notes">Notes</label><textarea id="field-notes" rows="2" placeholder="Why you\'re watching it, red flags, anything worth remembering"></textarea></div>' +
-            '</div>' +
-            '<div class="form-actions"><button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button><button type="submit" class="btn btn-primary" id="save-btn">Save coin</button></div>' +
+          '<input type="hidden" id="field-id">' +
+          '<div class="form-grid">' +
+          '<div class="field span-2"><label for="field-cmc-url">CoinMarketCap link</label><input type="url" id="field-cmc-url" placeholder="https://coinmarketcap.com/currencies/bitcoin/" autocomplete="url"><span class="lookup-status" id="lookup-status" aria-live="polite">We\'ll fill the name, ticker, price, and contract when available.</span></div>' +
+          '<div class="field"><label for="field-name">Coin name *</label><input type="text" id="field-name" placeholder="e.g. Fetch.ai" required></div>' +
+          '<div class="field"><label for="field-symbol">Symbol / ticker *</label><input type="text" id="field-symbol" placeholder="e.g. FET" required></div>' +
+          '<div class="field span-2"><label for="field-contract">Contract address</label><input type="text" id="field-contract" class="mono" placeholder="0x… (leave blank for native coins like BTC or ETH)"></div>' +
+          '<div class="field"><label for="field-price">Price *</label><input type="text" id="field-price" placeholder="e.g. 0.42" required><span class="hint">Whatever you\'re seeing right now — you keep this current</span></div>' +
+          '<div class="field"><label for="field-target">Target, in × *</label><input type="number" id="field-target" min="1" step="0.1" placeholder="e.g. 25" required><span class="hint">How many times over you think this could go</span></div>' +
+          '<div class="field span-2"><label for="field-buy">Where to buy *</label><input type="text" id="field-buy" placeholder="e.g. Uniswap, Coinbase, Binance" required></div>' +
+          '<div class="field span-2"><label for="field-notes">Notes</label><textarea id="field-notes" rows="2" placeholder="Why you\'re watching it, red flags, anything worth remembering"></textarea></div>' +
+          '</div>' +
+          '<div class="form-actions"><button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button><button type="submit" class="btn btn-primary" id="save-btn">Save coin</button></div>' +
           '</form>' +
-        '</section>' +
-        '<div class="row-head" id="row-head"' + rowHeadAttr + '><span>Coin</span><span>Contract</span><span>Price</span><span>Target</span><span>Where to buy</span><span></span></div>' +
-        '<section class="list-root" id="list-root">' + listHtml + '</section>' +
-        // Escaping angle brackets keeps a stray closing-script sequence
-        // inside someone's notes field from prematurely ending this tag
-        // when the published HTML is parsed; JSON.parse reads the escape
-        // back to the original character with no change in meaning.
-        '<script type="application/json" id="state-data">' + JSON.stringify(currentState).replace(/</g, "\\u003c") + '</' + 'script>' +
-      '</div>'
-    );
-  }
+          '</section>' +
+          '<div class="row-head" id="row-head"' + rowHeadAttr + '><span>Coin</span><span>Contract</span><span>Price</span><span>Target</span><span>Where to buy</span><span></span></div>' +
+          '<section class="list-root" id="list-root">' + listHtml + '</section>' +
+          // Escaping angle brackets keeps a stray closing-script sequence
+          // inside someone's notes field from prematurely ending this tag
+          // when the published HTML is parsed; JSON.parse reads the escape
+          // back to the original character with no change in meaning.
+          '<script type="application/json" id="state-data">' + JSON.stringify(currentState).replace(/</g, "\\u003c") + '</' + 'script>' +
+          '</div>'
+        );
+      }
 
-  function buildDocument(currentState) {
-    var body = renderBodyShell(currentState);
-    return (
-      '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n' +
-      '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-      '<title>Coin Watchlist</title>\n' +
-      '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
-      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
-      '<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">\n' +
-      '<style id="page-style">' + STYLE_SRC + '</style>\n' +
-      body + "\n" +
-      '<script id="app-script" type="text/javascript">' + SCRIPT_SRC + '</' + 'script>\n' +
-      '</html>'
-    );
-  }
+      function buildDocument(currentState) {
+        var body = renderBodyShell(currentState);
+        return (
+          '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n' +
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+          '<title>Coin Watchlist</title>\n' +
+          '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+          '<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">\n' +
+          '<style id="page-style">' + STYLE_SRC + '</style>\n' +
+          body + "\n" +
+          '<script id="app-script" type="text/javascript">' + SCRIPT_SRC + '</' + 'script>\n' +
+          '</html>'
+        );
+      }
 
-  function persist() {
-    try { localStorage.setItem("coin-watchlist-backup", JSON.stringify(state)); } catch (e) {}
-    if (!window.claude || typeof window.claude.use !== "function") return;
-    window.claude.use("artifact").then(function (artifact) {
-      if (!artifact) return;
-      var html = buildDocument(state);
-      artifact.publish(html).catch(function (err) {
-        if (!err || err.code === "conflict") return;
-        showToast("Couldn't save — " + (err.message || "try again"));
+      function persist() {
+        try { localStorage.setItem("coin-watchlist-backup", JSON.stringify(state)); } catch (e) { }
+        if (!window.claude || typeof window.claude.use !== "function") return;
+        window.claude.use("artifact").then(function (artifact) {
+          if (!artifact) return;
+          var html = buildDocument(state);
+          artifact.publish(html).catch(function (err) {
+            if (!err || err.code === "conflict") return;
+            showToast("Couldn't save — " + (err.message || "try again"));
+          });
+        });
+      }
+
+      document.getElementById("add-btn").addEventListener("click", function () { openForm(null); });
+      document.getElementById("cancel-btn").addEventListener("click", closeForm);
+      coinForm.addEventListener("submit", handleSubmit);
+      document.getElementById("field-cmc-url").addEventListener("blur", function (e) {
+        clearTimeout(lookupTimer);
+        lookupTimer = setTimeout(function () { lookupCoinMarketCap(e.target.value); }, 150);
       });
-    });
-  }
+      document.getElementById("search-input").addEventListener("input", function (e) { filterText = e.target.value; render(); });
+      document.getElementById("sort-select").addEventListener("change", function (e) { sortKey = e.target.value; render(); });
+      document.getElementById("sort-select").value = sortKey;
 
-  document.getElementById("add-btn").addEventListener("click", function () { openForm(null); });
-  document.getElementById("cancel-btn").addEventListener("click", closeForm);
-  coinForm.addEventListener("submit", handleSubmit);
-  document.getElementById("search-input").addEventListener("input", function (e) { filterText = e.target.value; render(); });
-  document.getElementById("sort-select").addEventListener("change", function (e) { sortKey = e.target.value; render(); });
-  document.getElementById("sort-select").value = sortKey;
+      listRoot.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-action]");
+        if (!btn) return;
+        var id = btn.getAttribute("data-id");
+        var action = btn.getAttribute("data-action");
+        if (action === "copy") copyContract(id);
+        else if (action === "delete") deleteCoin(id);
+        else if (action === "edit") {
+          var coin = state.find(function (c) { return c.id === id; });
+          if (coin) openForm(coin);
+        }
+      });
 
-  listRoot.addEventListener("click", function (e) {
-    var btn = e.target.closest("[data-action]");
-    if (!btn) return;
-    var id = btn.getAttribute("data-id");
-    var action = btn.getAttribute("data-action");
-    if (action === "copy") copyContract(id);
-    else if (action === "delete") deleteCoin(id);
-    else if (action === "edit") {
-      var coin = state.find(function (c) { return c.id === id; });
-      if (coin) openForm(coin);
-    }
-  });
+      render();
+    })();
+  </script>
 
-  render();
-})();
-</script>
 </html>
