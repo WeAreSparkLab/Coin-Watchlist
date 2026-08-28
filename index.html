@@ -11,7 +11,9 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#eeede4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#15161a" media="(prefers-color-scheme: dark)">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -631,6 +633,21 @@
       color: var(--text-faint);
     }
 
+    .account-who {
+      margin: 0;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-alt);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .account-who strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
     .list-root {
       display: flex;
       flex-direction: column;
@@ -981,7 +998,7 @@
       <div class="topbar-actions">
         <button type="button" class="sync-chip install-chip" id="install-btn" hidden>Install app</button>
         <button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings">
-          <span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span>
+          <span class="sync-dot"></span><span id="cloud-btn-label">Sign in</span>
         </button>
       </div>
     </header>
@@ -1022,41 +1039,49 @@
     </div>
 
     <section class="form-panel" id="cloud-panel" hidden>
-      <h2>Cloud backup</h2>
-      <p class="form-sub">Keeps a copy of your watchlist in your own Supabase project, so clearing this browser
-        doesn't lose it. Your keys stay in this browser only — they're never written into the page.</p>
-      <div class="form-grid">
-        <div class="field span-2">
-          <label for="field-supabase-url">Supabase project URL</label>
-          <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co">
-          <span class="hint">Project settings → Data API → Project URL</span>
-        </div>
-        <div class="field span-2">
-          <label for="field-supabase-key">Anon public key</label>
-          <input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…">
-          <span class="hint">The publishable anon key — safe to use here, it grants nothing on its own</span>
-        </div>
-        <div class="field span-2">
-          <label for="field-sync-key">Sync key</label>
-          <div class="key-row">
-            <input type="text" id="field-sync-key" class="mono" placeholder="Generated for you" spellcheck="false">
-            <button type="button" class="btn" id="copy-key-btn">Copy</button>
-            <button type="button" class="btn" id="new-key-btn">New</button>
+      <h2>Your account</h2>
+      <p class="form-sub">Sign in with the same account on your phone and your laptop and they'll share one
+        watchlist. Everything lives in your own Supabase project; your password is never stored on this device.</p>
+
+      <div id="account-signed-in" hidden>
+        <p class="account-who">Signed in as <strong id="account-email"></strong></p>
+      </div>
+
+      <div id="account-form">
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="field-supabase-url">Supabase project URL</label>
+            <input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co">
+            <span class="hint">Project settings → Data API → Project URL</span>
           </div>
-          <span class="hint">This is the secret that unlocks your row. Save it somewhere — enter the same key on
-            another device to load the same watchlist.</span>
+          <div class="field span-2">
+            <label for="field-supabase-key">Anon public key</label>
+            <input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…">
+            <span class="hint">The publishable anon key — safe here, it grants nothing on its own</span>
+          </div>
+          <div class="field">
+            <label for="field-email">Email</label>
+            <input type="email" id="field-email" placeholder="you@example.com" autocomplete="username">
+          </div>
+          <div class="field">
+            <label for="field-password">Password</label>
+            <input type="password" id="field-password" placeholder="At least six characters"
+              autocomplete="current-password">
+          </div>
         </div>
       </div>
+
       <details class="sql-details">
         <summary>First time? Run this SQL in your Supabase SQL editor</summary>
         <pre class="sql-block" id="setup-sql"></pre>
         <button type="button" class="btn" id="copy-sql-btn">Copy SQL</button>
       </details>
-      <p class="sync-note" id="cloud-status">Not connected.</p>
+      <p class="sync-note" id="cloud-status">Not signed in.</p>
       <div class="form-actions">
-        <button type="button" class="btn btn-ghost" id="cloud-disconnect-btn">Disconnect</button>
+        <button type="button" class="btn btn-ghost" id="signout-btn">Sign out</button>
         <button type="button" class="btn btn-ghost" id="cloud-close-btn">Close</button>
-        <button type="button" class="btn btn-primary" id="cloud-save-btn">Connect &amp; sync</button>
+        <button type="button" class="btn" id="signup-btn">Create account</button>
+        <button type="button" class="btn btn-primary" id="signin-btn">Sign in</button>
       </div>
     </section>
 
@@ -1161,49 +1186,60 @@
       // that body has to be maintained in two places. The panel fills the
       // <pre> from this at open time.
       var SETUP_SQL = [
-        "-- Coin Watchlist cloud backup — run once in the Supabase SQL editor.",
+        "-- Coin Watchlist accounts — run once in the Supabase SQL editor.",
+        "-- Sign-ups use Supabase Auth, so there is no user table to create.",
         "",
         "create table if not exists public.watchlists (",
-        "  id         uuid primary key,",
+        "  user_id    uuid primary key references auth.users(id) on delete cascade,",
         "  data       jsonb not null default '[]'::jsonb,",
         "  updated_at timestamptz not null default now()",
         ");",
         "",
-        "-- The anon key gets no direct access at all: row level security on",
-        "-- with zero policies refuses every plain select, insert and update.",
+        "-- Row level security ties every row to the account that owns it, so",
+        "-- one signed-in user can never read or write another's watchlist.",
         "alter table public.watchlists enable row level security;",
-        "revoke all on public.watchlists from anon, authenticated;",
+        "revoke all on public.watchlists from anon;",
         "",
-        "-- The only way in is these two functions, and both demand the sync key.",
-        "create or replace function public.watchlist_load(key uuid)",
-        "returns jsonb language sql security definer set search_path = public as $$",
+        "drop policy if exists \"own row\" on public.watchlists;",
+        "create policy \"own row\" on public.watchlists",
+        "  for all to authenticated",
+        "  using (auth.uid() = user_id)",
+        "  with check (auth.uid() = user_id);",
+        "",
+        "create or replace function public.watchlist_load()",
+        "returns jsonb language sql security invoker set search_path = public as $$",
         "  select coalesce(",
         "    (select jsonb_build_object('data', w.data, 'updated_at', w.updated_at)",
-        "       from public.watchlists w where w.id = key),",
+        "       from public.watchlists w where w.user_id = auth.uid()),",
         "    jsonb_build_object('data', '[]'::jsonb, 'updated_at', null)",
         "  );",
         "$$;",
         "",
         "create or replace function public.watchlist_save(",
-        "  key uuid, payload jsonb, expected timestamptz default null)",
-        "returns jsonb language plpgsql security definer set search_path = public as $$",
+        "  payload jsonb, expected timestamptz default null)",
+        "returns jsonb language plpgsql security invoker set search_path = public as $$",
         "declare",
+        "  uid        uuid := auth.uid();",
         "  current_ts timestamptz;",
         "  new_ts     timestamptz;",
         "begin",
+        "  if uid is null then",
+        "    raise exception 'not signed in';",
+        "  end if;",
+        "",
         "  select updated_at into current_ts",
-        "    from public.watchlists where id = key for update;",
+        "    from public.watchlists where user_id = uid for update;",
         "",
         "  -- Another device saved since this one last synced: refuse, and hand",
         "  -- its copy back so the page can ask which version to keep.",
         "  if current_ts is not null and (expected is null or current_ts > expected) then",
         "    return jsonb_build_object('ok', false, 'updated_at', current_ts,",
-        "      'data', (select data from public.watchlists where id = key));",
+        "      'data', (select data from public.watchlists where user_id = uid));",
         "  end if;",
         "",
-        "  insert into public.watchlists (id, data, updated_at)",
-        "       values (key, payload, now())",
-        "  on conflict (id) do update",
+        "  insert into public.watchlists (user_id, data, updated_at)",
+        "       values (uid, payload, now())",
+        "  on conflict (user_id) do update",
         "          set data = excluded.data, updated_at = now()",
         "    returning updated_at into new_ts;",
         "",
@@ -1211,10 +1247,10 @@
         "end;",
         "$$;",
         "",
-        "revoke all on function public.watchlist_load(uuid) from public;",
-        "revoke all on function public.watchlist_save(uuid, jsonb, timestamptz) from public;",
-        "grant execute on function public.watchlist_load(uuid) to anon;",
-        "grant execute on function public.watchlist_save(uuid, jsonb, timestamptz) to anon;"
+        "revoke all on function public.watchlist_load() from public, anon;",
+        "revoke all on function public.watchlist_save(jsonb, timestamptz) from public, anon;",
+        "grant execute on function public.watchlist_load() to authenticated;",
+        "grant execute on function public.watchlist_save(jsonb, timestamptz) to authenticated;"
       ].join("\n");
 
       // Standalone build: this file has no shared save destination (no
@@ -2381,9 +2417,13 @@
       // this file carries the watchlist but not the keys to the cloud row.
 
       var CLOUD_KEY = "coin-watchlist-cloud";
-      var cloud = { url: "", anonKey: "", syncKey: "", lastRemoteAt: null, pending: false };
+      var cloud = {
+        url: "", anonKey: "",
+        accessToken: "", refreshToken: "", expiresAt: 0, email: "",
+        lastRemoteAt: null, pending: false
+      };
       var cloudState = "off";
-      var cloudMessage = "Not connected.";
+      var cloudMessage = "Not signed in.";
       var cloudPushTimer = null;
 
       function loadCloudConfig() {
@@ -2400,16 +2440,21 @@
         try { localStorage.setItem(CLOUD_KEY, JSON.stringify(cloud)); } catch (e) { }
       }
 
-      function cloudConfigured() {
-        return !!(cloud.url && cloud.anonKey && cloud.syncKey);
+      // The project is "connected"; the user is separately "signed in".
+      function projectConfigured() {
+        return !!(cloud.url && cloud.anonKey);
       }
 
-      function newSyncKey() {
-        if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-          var r = (Math.random() * 16) | 0;
-          return (c === "x" ? r : ((r & 0x3) | 0x8)).toString(16);
-        });
+      function signedIn() {
+        return !!(projectConfigured() && cloud.accessToken);
+      }
+
+      function cloudConfigured() {
+        return signedIn();
+      }
+
+      function apiBase() {
+        return String(cloud.url || "").trim().replace(/\/+$/, "");
       }
 
       function tsOf(value) {
@@ -2419,26 +2464,94 @@
 
       function describeCloudError(status, body) {
         if (status === 404) return "Couldn't find the sync functions — run the setup SQL in Supabase first.";
-        if (status === 401 || status === 403) return "Supabase rejected the key — check the anon key.";
-        if (status === 400 && /invalid input syntax for type uuid/i.test(body || "")) {
-          return "That sync key isn't a valid UUID — use New to generate one.";
-        }
+        if (status === 401 || status === 403) return "Your session expired — sign in again.";
         return "Supabase returned an error (" + status + ").";
       }
 
-      function cloudRpc(fnName, body) {
-        var base = String(cloud.url || "").trim().replace(/\/+$/, "");
-        return fetch(base + "/rest/v1/rpc/" + fnName, {
+      function describeAuthError(status, body) {
+        var text = String(body || "");
+        var message = "";
+        try { var j = JSON.parse(text); message = j.error_description || j.msg || j.message || j.error || ""; }
+        catch (e) { message = text.slice(0, 160); }
+        if (/already registered|already been registered/i.test(message)) {
+          return "That email already has an account — sign in instead.";
+        }
+        if (/invalid login credentials/i.test(message)) return "Wrong email or password.";
+        if (/email not confirmed/i.test(message)) {
+          return "Check your inbox and confirm the address, then sign in.";
+        }
+        if (/password/i.test(message) && /least|short/i.test(message)) {
+          return "That password is too short — use at least six characters.";
+        }
+        if (status === 404) return "Couldn't reach that project — check the URL.";
+        if (status === 401) return "Supabase rejected the anon key — check it.";
+        return message || ("Supabase returned an error (" + status + ").");
+      }
+
+      function authFetch(path, body) {
+        return fetch(apiBase() + "/auth/v1/" + path, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": cloud.anonKey,
-            "Authorization": "Bearer " + cloud.anonKey
-          },
+          headers: { "Content-Type": "application/json", "apikey": cloud.anonKey },
           body: JSON.stringify(body)
+        }).then(function (res) {
+          return res.text().then(function (text) {
+            if (!res.ok) throw new Error(describeAuthError(res.status, text));
+            try { return JSON.parse(text); } catch (e) { return {}; }
+          });
+        });
+      }
+
+      function storeSession(session) {
+        if (!session || !session.access_token) return false;
+        cloud.accessToken = session.access_token;
+        cloud.refreshToken = session.refresh_token || cloud.refreshToken;
+        // expires_in is seconds; keep an absolute moment so a reload can tell
+        // whether the token is still good without another round trip.
+        cloud.expiresAt = Date.now() + ((Number(session.expires_in) || 3600) * 1000);
+        if (session.user && session.user.email) cloud.email = session.user.email;
+        saveCloudConfig();
+        return true;
+      }
+
+      function clearSession() {
+        cloud.accessToken = "";
+        cloud.refreshToken = "";
+        cloud.expiresAt = 0;
+        cloud.lastRemoteAt = null;
+        saveCloudConfig();
+      }
+
+      // Refreshes shortly before expiry rather than waiting for a 401, so a
+      // save is never lost to a token that died mid-request.
+      function ensureFreshToken() {
+        if (!cloud.accessToken) return Promise.reject(new Error("Not signed in."));
+        if (cloud.expiresAt && Date.now() < cloud.expiresAt - 60000) return Promise.resolve();
+        if (!cloud.refreshToken) return Promise.resolve();
+        return authFetch("token?grant_type=refresh_token", { refresh_token: cloud.refreshToken })
+          .then(function (session) {
+            if (!storeSession(session)) throw new Error("Session expired.");
+          })
+          .catch(function () {
+            clearSession();
+            throw new Error("Your session expired — sign in again.");
+          });
+      }
+
+      function cloudRpc(fnName, body) {
+        return ensureFreshToken().then(function () {
+          return fetch(apiBase() + "/rest/v1/rpc/" + fnName, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": cloud.anonKey,
+              "Authorization": "Bearer " + cloud.accessToken
+            },
+            body: JSON.stringify(body || {})
+          });
         }).then(function (res) {
           if (!res.ok) {
             return res.text().then(function (text) {
+              if (res.status === 401) clearSession();
               throw new Error(describeCloudError(res.status, text));
             });
           }
@@ -2453,7 +2566,7 @@
       }
 
       function renderCloudStatus() {
-        var labels = { off: "Backup off", busy: "Syncing…", on: "Backed up", error: "Sync error", conflict: "Needs a choice" };
+        var labels = { off: "Sign in", busy: "Syncing…", on: "Synced", error: "Sync error", conflict: "Needs a choice" };
         var modifiers = { on: " is-on", busy: " is-busy", error: " is-error", conflict: " is-conflict" };
         var label = document.getElementById("cloud-btn-label");
         var chip = document.getElementById("cloud-btn");
@@ -2493,11 +2606,11 @@
       function cloudPull() {
         if (!cloudConfigured()) return Promise.resolve();
         setCloudState("busy", "Checking the cloud copy…");
-        return cloudRpc("watchlist_load", { key: cloud.syncKey }).then(function (res) {
+        return cloudRpc("watchlist_load").then(function (res) {
           var remoteAt = res && res.updated_at ? res.updated_at : null;
           var remoteData = res && Array.isArray(res.data) ? res.data : [];
 
-          // Nothing stored under this key yet — this device seeds it.
+          // Nothing stored for this account yet — this device seeds it.
           if (!remoteAt) return cloudPush();
 
           var remoteIsNewer = tsOf(remoteAt) > tsOf(cloud.lastRemoteAt);
@@ -2522,7 +2635,6 @@
         if (!cloudConfigured()) return Promise.resolve();
         setCloudState("busy", "Saving to the cloud…");
         return cloudRpc("watchlist_save", {
-          key: cloud.syncKey,
           payload: state,
           expected: cloud.lastRemoteAt
         }).then(function (res) {
@@ -2539,43 +2651,91 @@
       function openCloudPanel() {
         document.getElementById("field-supabase-url").value = cloud.url || "";
         document.getElementById("field-supabase-key").value = cloud.anonKey || "";
-        document.getElementById("field-sync-key").value = cloud.syncKey || newSyncKey();
+        document.getElementById("field-email").value = cloud.email || "";
+        document.getElementById("field-password").value = "";
         document.getElementById("setup-sql").textContent = SETUP_SQL;
         formPanel.hidden = true;
         cloudPanel.hidden = false;
-        renderCloudStatus();
+        renderAccountPanel();
         cloudPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
 
-      function connectCloud() {
+      // Signed in, the credentials are noise: collapse them and show who you
+      // are instead.
+      function renderAccountPanel() {
+        var isIn = signedIn();
+        var signedBox = document.getElementById("account-signed-in");
+        var formBox = document.getElementById("account-form");
+        var who = document.getElementById("account-email");
+        if (signedBox) signedBox.hidden = !isIn;
+        if (formBox) formBox.hidden = isIn;
+        if (who) who.textContent = cloud.email || "";
+        renderCloudStatus();
+      }
+
+      function readProjectFields() {
         var url = document.getElementById("field-supabase-url").value.trim();
         var anonKey = document.getElementById("field-supabase-key").value.trim();
-        var syncKey = document.getElementById("field-sync-key").value.trim();
-        if (!url || !anonKey || !syncKey) {
-          setCloudState(cloudState, "Fill in all three fields to connect.");
-          return;
-        }
-        // Pointing at a different project or key means this device knows
-        // nothing about what's stored there; anything local counts as an
-        // unsynced change so an occupied row raises the choice instead of
-        // being overwritten.
-        var switching = url !== cloud.url || syncKey !== cloud.syncKey;
-        cloud.url = url;
-        cloud.anonKey = anonKey;
-        cloud.syncKey = syncKey;
-        if (switching) {
+        if (url !== cloud.url || anonKey !== cloud.anonKey) {
+          // A different project knows nothing about this device, so anything
+          // local counts as unsynced and an occupied account raises the
+          // keep-which-copy choice rather than being overwritten.
+          cloud.url = url;
+          cloud.anonKey = anonKey;
           cloud.lastRemoteAt = null;
           cloud.pending = state.length > 0;
         }
-        saveCloudConfig();
-        cloudPull();
+        return projectConfigured();
       }
 
-      function disconnectCloud() {
-        cloud = { url: "", anonKey: "", syncKey: "", lastRemoteAt: null, pending: false };
-        try { localStorage.removeItem(CLOUD_KEY); } catch (e) { }
-        setCloudState("off", "Not connected. Your list is still saved in this browser.");
-        showToast("Cloud backup disconnected");
+      function authenticate(mode) {
+        if (!readProjectFields()) {
+          setCloudState(cloudState, "Add your Supabase URL and anon key first.");
+          return;
+        }
+        var email = document.getElementById("field-email").value.trim();
+        var password = document.getElementById("field-password").value;
+        if (!email || !password) {
+          setCloudState(cloudState, "Enter an email and password.");
+          return;
+        }
+
+        setCloudState("busy", mode === "signup" ? "Creating your account…" : "Signing in…");
+        var path = mode === "signup" ? "signup" : "token?grant_type=password";
+        authFetch(path, { email: email, password: password }).then(function (result) {
+          // Supabase returns a session immediately unless the project requires
+          // email confirmation, in which case there is nothing to store yet.
+          var session = result && result.access_token ? result : (result && result.session);
+          if (!storeSession(session)) {
+            cloud.email = email;
+            saveCloudConfig();
+            setCloudState("off", mode === "signup"
+              ? "Account created. Confirm the link in your email, then sign in."
+              : "Signed up, but no session came back — confirm your email, then sign in.");
+            renderAccountPanel();
+            return;
+          }
+          cloud.email = email;
+          saveCloudConfig();
+          document.getElementById("field-password").value = "";
+          renderAccountPanel();
+          showToast(mode === "signup" ? "Account created" : "Signed in as " + email);
+          return cloudPull().then(renderAccountPanel);
+        }).catch(function (err) {
+          setCloudState("error", err.message || "Couldn't sign in.");
+          renderAccountPanel();
+        });
+      }
+
+      function signOut() {
+        var email = cloud.email;
+        clearSession();
+        cloud.pending = false;
+        saveCloudConfig();
+        setCloudState("off", "Signed out" + (email ? " (" + email + ")" : "") +
+          ". Your list is still saved on this device.");
+        renderAccountPanel();
+        showToast("Signed out");
       }
 
       function copyText(text, message) {
@@ -2619,7 +2779,7 @@
           '</div>' +
           '<div class="topbar-actions">' +
           '<button type="button" class="sync-chip install-chip" id="install-btn" hidden>Install app</button>' +
-          '<button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings"><span class="sync-dot"></span><span id="cloud-btn-label">Backup off</span></button>' +
+          '<button type="button" class="sync-chip" id="cloud-btn" aria-label="Cloud sync settings"><span class="sync-dot"></span><span id="cloud-btn-label">Sign in</span></button>' +
           '</div>' +
           '</header>' +
           '<div class="disclaimer">' +
@@ -2645,16 +2805,20 @@
           // localStorage, so a published or shared copy of this page carries
           // the watchlist without carrying access to the cloud row.
           '<section class="form-panel" id="cloud-panel" hidden>' +
-          '<h2>Cloud backup</h2>' +
-          '<p class="form-sub">Keeps a copy of your watchlist in your own Supabase project, so clearing this browser doesn\'t lose it. Your keys stay in this browser only — they\'re never written into the page.</p>' +
+          '<h2>Your account</h2>' +
+          '<p class="form-sub">Sign in with the same account on your phone and your laptop and they\'ll share one watchlist. Everything lives in your own Supabase project; your password is never stored on this device.</p>' +
+          '<div id="account-signed-in" hidden><p class="account-who">Signed in as <strong id="account-email"></strong></p></div>' +
+          '<div id="account-form">' +
           '<div class="form-grid">' +
           '<div class="field span-2"><label for="field-supabase-url">Supabase project URL</label><input type="url" id="field-supabase-url" class="mono" placeholder="https://yourproject.supabase.co"><span class="hint">Project settings → Data API → Project URL</span></div>' +
-          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…"><span class="hint">The publishable anon key — safe to use here, it grants nothing on its own</span></div>' +
-          '<div class="field span-2"><label for="field-sync-key">Sync key</label><div class="key-row"><input type="text" id="field-sync-key" class="mono" placeholder="Generated for you" spellcheck="false"><button type="button" class="btn" id="copy-key-btn">Copy</button><button type="button" class="btn" id="new-key-btn">New</button></div><span class="hint">This is the secret that unlocks your row. Save it somewhere — enter the same key on another device to load the same watchlist.</span></div>' +
+          '<div class="field span-2"><label for="field-supabase-key">Anon public key</label><input type="password" id="field-supabase-key" class="mono" placeholder="eyJhbGciOi…"><span class="hint">The publishable anon key — safe here, it grants nothing on its own</span></div>' +
+          '<div class="field"><label for="field-email">Email</label><input type="email" id="field-email" placeholder="you@example.com" autocomplete="username"></div>' +
+          '<div class="field"><label for="field-password">Password</label><input type="password" id="field-password" placeholder="At least six characters" autocomplete="current-password"></div>' +
+          '</div>' +
           '</div>' +
           '<details class="sql-details"><summary>First time? Run this SQL in your Supabase SQL editor</summary><pre class="sql-block" id="setup-sql"></pre><button type="button" class="btn" id="copy-sql-btn">Copy SQL</button></details>' +
-          '<p class="sync-note" id="cloud-status">Not connected.</p>' +
-          '<div class="form-actions"><button type="button" class="btn btn-ghost" id="cloud-disconnect-btn">Disconnect</button><button type="button" class="btn btn-ghost" id="cloud-close-btn">Close</button><button type="button" class="btn btn-primary" id="cloud-save-btn">Connect &amp; sync</button></div>' +
+          '<p class="sync-note" id="cloud-status">Not signed in.</p>' +
+          '<div class="form-actions"><button type="button" class="btn btn-ghost" id="signout-btn">Sign out</button><button type="button" class="btn btn-ghost" id="cloud-close-btn">Close</button><button type="button" class="btn" id="signup-btn">Create account</button><button type="button" class="btn btn-primary" id="signin-btn">Sign in</button></div>' +
           '</section>' +
           '<section class="form-panel" id="form-panel" hidden>' +
           '<h2 id="form-title">Add a coin</h2>' +
@@ -2699,7 +2863,9 @@
           '<link rel="manifest" href="manifest.webmanifest">\n' +
           '<meta name="theme-color" content="#eeede4" media="(prefers-color-scheme: light)">\n' +
           '<meta name="theme-color" content="#15161a" media="(prefers-color-scheme: dark)">\n' +
-          '<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">\n' +
+          '<link rel="icon" href="favicon.ico" sizes="any">\n' +
+          '<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">\n' +
+          '<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">\n' +
           '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n' +
           '<meta name="apple-mobile-web-app-capable" content="yes">\n' +
           '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n' +
@@ -2752,14 +2918,9 @@
         if (cloudPanel.hidden) openCloudPanel(); else cloudPanel.hidden = true;
       });
       document.getElementById("cloud-close-btn").addEventListener("click", function () { cloudPanel.hidden = true; });
-      document.getElementById("cloud-save-btn").addEventListener("click", connectCloud);
-      document.getElementById("cloud-disconnect-btn").addEventListener("click", disconnectCloud);
-      document.getElementById("copy-key-btn").addEventListener("click", function () {
-        copyText(document.getElementById("field-sync-key").value, "Copied sync key — keep it somewhere safe");
-      });
-      document.getElementById("new-key-btn").addEventListener("click", function () {
-        document.getElementById("field-sync-key").value = newSyncKey();
-      });
+      document.getElementById("signin-btn").addEventListener("click", function () { authenticate("signin"); });
+      document.getElementById("signup-btn").addEventListener("click", function () { authenticate("signup"); });
+      document.getElementById("signout-btn").addEventListener("click", signOut);
       document.getElementById("copy-sql-btn").addEventListener("click", function () {
         copyText(SETUP_SQL, "Copied the setup SQL");
       });
